@@ -11,23 +11,44 @@ const pool = new Pool({
 });
 
 // Example query to create a table
-const createTableQuery = `
+const createTableQueries = [
+  `DROP TABLE IF EXISTS users, posts, images;
+  `,
+  `
   CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     user_name VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
     description TEXT,
-    avatar BYTEA NOT NULL,
+    avatar BYTEA NOT NULL
   );
-`;
+`,
+  `CREATE TABLE IF NOT EXISTS posts (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    categories VARCHAR[],
+    content TEXT,
+    user_id INTEGER REFERENCES users(id)
+  );
+`,
+  `CREATE TABLE IF NOT EXISTS images (
+    id SERIAL PRIMARY KEY,
+    alt TEXT,
+    image BYTEA NOT NULL,
+    post_id INTEGER REFERENCES posts(id)
+  );
+`,
+];
 
 // Function to execute queries
-async function executeQuery(query) {
+async function executeQuery(queries) {
   try {
     const client = await pool.connect();
-    const result = await client.query(query);
+    for (const query of queries) {
+      await client.query(query);
+    }
     client.release();
-    return result;
   } catch (error) {
     console.error("Error executing query:", error);
   }
@@ -37,7 +58,7 @@ async function executeQuery(query) {
 async function setupDatabase() {
   try {
     // Create the table
-    await executeQuery(createTableQuery);
+    await executeQuery(createTableQueries);
     console.log("Table created successfully.");
   } catch (error) {
     console.error("Error setting up the database:", error);
