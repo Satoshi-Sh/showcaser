@@ -32,3 +32,8 @@
   height: 10rem;
   border-radius: 10px;
 }
+
+.user-board:hover {
+  background-color: azure;
+  cursor: pointer;
+}

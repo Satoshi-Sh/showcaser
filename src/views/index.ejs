@@ -8,7 +8,7 @@
     <h1 class="center">Registered Users</h1>
     <div class="users-board">
       <% for (let user of users) { %>
-      <div class="user-board">
+      <div class="user-board" id="<%= user.id %>" onclick="handleClick(event)">
         <h2><%= user.name %></h2>
         <img
           src="data:image/jpeg;base64,<%= user.avatar.toString('base64') %>"
@@ -19,5 +19,10 @@
       </div>
       <% } %>
     </div>
+    <script>
+      function handleClick(event) {
+        window.location.href = `/user/${event.target.id}`;
+      }
+    </script>
   </body>
 </html>

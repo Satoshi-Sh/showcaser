@@ -8,10 +8,31 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static("src/public"));
 
-app.get("/", (req, res) => {
+app.get("/users", (req, res) => {
   getData("SELECT * FROM users;")
     .then((data: any[]) => {
       res.render("index", { users: data });
+    })
+    .catch((err: Error) => {
+      console.error(err);
+      res.status(500).send("Internal Server Error");
+    });
+});
+
+app.get("/user/:id", (req, res) => {
+  const id = req.params.id;
+  // validate number
+  if (!/^\d+$/.test(id)) {
+    res.status(400).send("Invalid ID");
+    return;
+  }
+  const query = `select *  from users
+    inner join posts on users.id=posts.user_id
+    inner join images on posts.id=images.post_id
+    where users.id=${id};`;
+  getData(query)
+    .then((data: any[]) => {
+      res.send(data);
     })
     .catch((err: Error) => {
       console.error(err);
