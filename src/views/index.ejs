@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Registered Users</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <h1 class="center">Registered Users</h1>
+    <div class="users-board">
+      <% for (let user of users) { %>
+      <div class="user-board">
+        <h2><%= user.name %></h2>
+        <img
+          src="data:image/jpeg;base64,<%= user.avatar.toString('base64') %>"
+          alt="Avatar"
+          class="avatar"
+        />
+        <p><%= user.description %></p>
+      </div>
+      <% } %>
+    </div>
+  </body>
+</html>
