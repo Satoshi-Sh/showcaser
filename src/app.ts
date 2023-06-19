@@ -1,6 +1,7 @@
 import express from "express";
 import getData from "./database";
 const path = require("path");
+import { shortenText } from "./utils";
 
 const app = express();
 app.set("view engine", "ejs");
@@ -11,6 +12,10 @@ app.use(express.static("src/public"));
 app.get("/users", (req, res) => {
   getData("SELECT * FROM users;")
     .then((data: any[]) => {
+      // add shortened user description
+      for (let i = 0; i < data.length; i++) {
+        data[i].shortendDesc = shortenText(data[i].description, 100);
+      }
       res.render("index", { users: data });
     })
     .catch((err: Error) => {
