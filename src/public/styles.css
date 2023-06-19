@@ -5,6 +5,13 @@
   border: solid 2px black;
 }
 
+.mini-avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: solid 2px black;
+}
+
 .center {
   text-align: center;
 }
@@ -36,4 +43,61 @@
 .user-board:hover {
   background-color: azure;
   cursor: pointer;
+}
+
+.projects-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 30rem);
+  grid-gap: 10px;
+  justify-content: center;
+  align-items: center;
+}
+
+.project-board {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: solid 2px grey;
+  padding: 15px;
+  width: 28rem;
+  height: 35rem;
+  border-radius: 10px;
+}
+
+.image-container {
+  height: 300px;
+  width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-img {
+  height: 100%;
+  width: auto;
+}
+
+.categories {
+  margin: 10px;
+}
+
+.project-footer {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  bottom: 10px;
+}
+
+.link-div {
+  margin-top: 30px;
+  text-align: center;
+}
+
+a {
+  color: rgba(128, 128, 128, 0.705);
+}
+a:hover {
+  color: rgba(128, 128, 128);
 }

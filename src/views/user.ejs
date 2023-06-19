@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Projects</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <h1 class="center">Projects</h1>
+    <article class="projects-board">
+      <% for (let project of projects) { %>
+      <div class="project-board" id="<%= project.id %>">
+        <h2><%= project.title %></h2>
+        <div class="image-container">
+          <img
+            src="data:image/jpeg;base64,<%= project.image.toString('base64') %>"
+            alt="<%= project.alt %>"
+            class="project-img"
+          />
+        </div>
+        <div class="categories">
+          <% for (let category of project.categories) { %> #<%= category %> <% }
+          %>
+        </div>
+        <p><%= project.content %></p>
+        <footer class="project-footer">
+          Created by <%= project.name %>
+          <img
+            src="data:image/jpeg;base64,<%= project.avatar.toString('base64') %>"
+            alt="Avatar"
+            class="mini-avatar"
+          />
+        </footer>
+      </div>
+      <% } %>
+    </article>
+    <div class="link-div">
+      <a href="/users">Back to User Page</a>
+    </div>
+  </body>
+</html>

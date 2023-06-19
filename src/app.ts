@@ -32,7 +32,8 @@ app.get("/user/:id", (req, res) => {
     where users.id=${id};`;
   getData(query)
     .then((data: any[]) => {
-      res.send(data);
+      // when user don't have a post yet
+      res.render("user", { projects: data });
     })
     .catch((err: Error) => {
       console.error(err);
