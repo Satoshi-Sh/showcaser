@@ -1,3 +1,8 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+/* for images */
 .avatar {
   width: 2rem;
   height: 2rem;
@@ -12,10 +17,24 @@
   border: solid 2px black;
 }
 
+.image-container {
+  height: 300px;
+  width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.project-img {
+  height: 100%;
+  width: auto;
+}
+
 .center {
   text-align: center;
 }
 
+/* user section */
 .users-board {
   /* display: flex;
   flex-wrap: wrap;
@@ -45,6 +64,7 @@
   background-color: azure;
   cursor: pointer;
 }
+/* project section */
 
 .projects-board {
   display: grid;
@@ -64,19 +84,6 @@
   width: 28rem;
   height: 35rem;
   border-radius: 10px;
-}
-
-.image-container {
-  height: 300px;
-  width: 300px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.project-img {
-  height: 100%;
-  width: auto;
 }
 
 .categories {
@@ -101,4 +108,41 @@ a {
 }
 a:hover {
   color: rgba(128, 128, 128);
+}
+
+/* header section */
+header {
+  position: sticky;
+  background-color: grey;
+  top: 0;
+  height: 50px;
+  z-index: 100;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  color: white;
+}
+header ul {
+  margin: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+}
+header ul li:first-child a {
+  color: white;
+  text-decoration: none;
+  font-size: 2rem;
+  font-style: italic;
+}
+
+header ul li a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.5rem;
+}
+
+header ul li a:hover {
+  color: ghostwhite;
 }
