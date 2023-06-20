@@ -2,10 +2,26 @@ import express, { Request, Response } from "express";
 import getData from "./database";
 const path = require("path");
 import { shortenText } from "./utils";
+import multer from "multer";
+import { Express } from "express";
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
+
+// Configure multer
+const uploadDirectory = path.join(__dirname, "/public/images");
+
+const storage = multer.diskStorage({
+  destination: uploadDirectory,
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    const fileExtension = path.extname(file.originalname);
+    const fileName = file.fieldname + "-" + uniqueSuffix + fileExtension;
+    cb(null, fileName);
+  },
+});
+const upload = multer({ storage: storage });
 
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static("src/public"));
@@ -29,12 +45,12 @@ app.get("/signup", (req, res) => {
   res.render("signup", { errorMessage: null });
 });
 
-app.post("/signup", (req: Request, res) => {
+app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
   // Access form data
   const name = req.body.username;
   const password = req.body.password;
   const description = req.body.description;
-  console.log(req);
+  console.log(req.file);
   console.log(name, password, description);
   // if log in sccesfully
   //res.redirect("/users");
