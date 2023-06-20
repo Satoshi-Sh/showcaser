@@ -17,11 +17,11 @@ const createTableQueries = [
   `
   CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
-    user_name VARCHAR(255) NOT NULL UNIQUE,
+    displayname VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     description TEXT,
-    avatar BYTEA NOT NULL
+    avatar_path VARCHAR(255) NOT NULL
   );
 `,
   `CREATE TABLE IF NOT EXISTS posts (
@@ -29,14 +29,8 @@ const createTableQueries = [
     title VARCHAR(255) NOT NULL,
     categories VARCHAR[],
     content TEXT,
-    user_id INTEGER REFERENCES users(id)
-  );
-`,
-  `CREATE TABLE IF NOT EXISTS images (
-    id SERIAL PRIMARY KEY,
-    alt TEXT,
-    image BYTEA NOT NULL,
-    post_id INTEGER REFERENCES posts(id)
+    user_id INTEGER REFERENCES users(id),
+    image_path VARCHAR(255) NOT NULL
   );
 `,
 ];

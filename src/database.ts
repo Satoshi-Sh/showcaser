@@ -2,7 +2,7 @@ const { Pool } = require("pg");
 require("dotenv").config();
 
 // Create a new pool instance
-const pool = new Pool({
+export const pool = new Pool({
   user: process.env.USER_NAME,
   password: process.env.PASSWORD,
   host: process.env.HOST,

@@ -1,16 +1,15 @@
 import express, { Request, Response } from "express";
-import getData from "./database";
+import getData, { pool } from "./database";
 const path = require("path");
 import { shortenText } from "./utils";
 import multer from "multer";
-import { Express } from "express";
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
 
 // Configure multer
-const uploadDirectory = path.join(__dirname, "/public/images");
+const uploadDirectory = "src/public/images";
 
 const storage = multer.diskStorage({
   destination: uploadDirectory,
@@ -47,15 +46,26 @@ app.get("/signup", (req, res) => {
 
 app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
   // Access form data
-  const name = req.body.username;
+  const displayname = req.body.displayname;
+  const username = req.body.username;
   const password = req.body.password;
   const description = req.body.description;
   console.log(req.file);
-  console.log(name, password, description);
-  // if log in sccesfully
-  //res.redirect("/users");
-  // failed to login, showing an error message
-  res.render("signup", { errorMessage: "Invalid username or password" });
+  try {
+    // Insert user data into the database
+    const query =
+      "INSERT INTO users (displayname, username, password, description, avatar_path) VALUES ($1, $2, $3, $4, $5)";
+    const avatar_path = req.file
+      ? `images/${req.file.filename}`
+      : "images/default.png";
+    const values = [displayname, username, password, description, avatar_path]; // Assuming the file path is stored in the 'path' property of the 'file' object
+    await pool.query(query, values);
+    // Redirect to success page or perform additional actions
+    res.redirect("/users");
+  } catch (error) {
+    console.error("Error during signup:", error);
+    res.render("signup", { errorMessage: "Something went wrong.." });
+  }
 });
 
 app.get("/users", (req, res) => {
