@@ -56,8 +56,8 @@ app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
     const query =
       "INSERT INTO users (displayname, username, password, description, avatar_path) VALUES ($1, $2, $3, $4, $5)";
     const avatar_path = req.file
-      ? `images/${req.file.filename}`
-      : "images/default.png";
+      ? `/images/${req.file.filename}`
+      : "/images/default.png";
     const values = [displayname, username, password, description, avatar_path]; // Assuming the file path is stored in the 'path' property of the 'file' object
     await pool.query(query, values);
     // Redirect to success page or perform additional actions

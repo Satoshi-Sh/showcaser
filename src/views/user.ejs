@@ -9,7 +9,9 @@
     <%- include('header') %>
     <h1 class="center">Projects</h1>
     <article class="projects-board">
-      <% for (let project of projects) { %>
+      <% if (!projects) { %>
+      <h2 class="center">No posting yet...</h2>
+      <% } else { %> <% for (let project of projects) { %>
       <div class="project-board" id="<%= project.id %>">
         <h2><%= project.title %></h2>
         <div class="image-container">
@@ -33,7 +35,7 @@
           />
         </footer>
       </div>
-      <% } %>
+      <% } %> <% } %>
     </article>
     <div class="link-div">
       <a href="/users">Back to User Page</a>
