@@ -1,5 +1,18 @@
 const { Pool } = require("pg");
 require("dotenv").config();
+const { exec } = require("child_process");
+
+// clear images in public folder except for default images
+const command = "rm -r src/public/images/imageUpload*";
+exec(command, (error, stdout, stderr) => {
+  if (error) {
+    console.error(`Error executing the command: ${error}`);
+    return;
+  }
+
+  // The command was executed successfully
+  console.log("Command output:", stdout);
+});
 
 // Create a new pool instance
 const pool = new Pool({

@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import getData, { pool } from "./database";
 const path = require("path");
-import { shortenText } from "./utils";
+import { shortenText, hashPassword, comparePassword } from "./utils";
 import multer from "multer";
 
 const app = express();
@@ -31,26 +31,61 @@ app.get("/login", (req, res) => {
 
 app.post("/login", (req, res) => {
   // Access form data
-  const name = req.body.username;
-  const password = req.body.password;
-  console.log(name, password);
-  // if log in sccesfully
-  //res.redirect("/users");
-  // failed to login, showing an error message
-  res.render("login", { errorMessage: "Invalid username or password" });
+  const { username, password } = req.body;
+  console.log(username, password);
+  pool.query(
+    "SELECT password FROM users WHERE username = $1",
+    [username],
+    (error: any, results: any) => {
+      if (error) {
+        console.error("Error executing query", error);
+        res.status(500).send("Internal server error");
+        return;
+      }
+      // Check if a user record was found
+      if (results.rows.length > 0) {
+        // check password is correct or not
+        const pass = results.rows[0]["password"];
+        comparePassword(password, pass)
+          .then((result: boolean) => {
+            if (result) {
+              res.redirect("/users");
+              console.log("User Logged in");
+            } else {
+              res.render("login", {
+                errorMessage: "Invalid username or password",
+              });
+            }
+          })
+          .catch((err: any) => {
+            console.error(err);
+            res.render("login", {
+              errorMessage: "Invalid username or password",
+            });
+          });
+      } else {
+        res.render("login", { errorMessage: "Invalid username or password" });
+      }
+    }
+  );
 });
 
 app.get("/signup", (req, res) => {
-  res.render("signup", { errorMessage: null });
+  res.render("signup", {
+    errorMessage: null,
+    displayname: null,
+    username: null,
+    description: null,
+  });
 });
 
 app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
   // Access form data
   const displayname = req.body.displayname;
   const username = req.body.username;
-  const password = req.body.password;
+  const password = await hashPassword(req.body.password);
   const description = req.body.description;
-  console.log(req.file);
+
   try {
     // Insert user data into the database
     const query =
@@ -60,11 +95,17 @@ app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
       : "/images/default.png";
     const values = [displayname, username, password, description, avatar_path]; // Assuming the file path is stored in the 'path' property of the 'file' object
     await pool.query(query, values);
+    console.log(password);
     // Redirect to success page or perform additional actions
     res.redirect("/users");
   } catch (error) {
     console.error("Error during signup:", error);
-    res.render("signup", { errorMessage: "Something went wrong.." });
+    res.render("signup", {
+      errorMessage: "Duplicate username..",
+      displayname,
+      username,
+      description,
+    });
   }
 });
 

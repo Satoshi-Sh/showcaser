@@ -18,6 +18,7 @@
             id="displayname"
             name="displayname"
             placeholder="displayname"
+            value="<%= displayname %>"
             required
           />
         </div>
@@ -46,7 +47,7 @@
           </div>
           <div class="textarea-div">
             <label for="description">Description</label>
-            <textarea id="description" name="description" cols="30" rows="7"></textarea>
+            <textarea id="description" name="description" cols="30" rows="7"><%= description  %></textarea>
           </div>
           <div class="imageupload-div">
             <label for="imageUpload">Select an Avatar (JPEG, PNG)</label>
