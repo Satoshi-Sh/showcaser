@@ -127,6 +127,7 @@ header ul {
   list-style: none;
   display: flex;
   flex-direction: row;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 20px;
 }
@@ -145,4 +146,53 @@ header ul li a {
 
 header ul li a:hover {
   color: ghostwhite;
+}
+
+/* login and sigin in page */
+
+.account-page {
+  margin-top: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 85vh;
+}
+
+label {
+  display: inline;
+}
+
+.account-board {
+  border: grey 2px solid;
+  max-width: 600px;
+  min-width: 300px;
+  width: 80vw;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+#error-message {
+  color: red;
+}
+
+.input-div {
+  width: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.textarea-div,
+.imageupload-div {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }

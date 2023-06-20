@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <%- include('header') %>
+    <div class="account-page">
+      <form class="account-board" action="/login" method="POST">
+        <h1>Login</h1>
+          <div class="input-div">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="username"
+              required
+            />
+          </div>
+          <div class="input-div">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="password"
+              required
+            />
+          </div>
+          <input type="submit">
+          <% if (errorMessage) { %>
+            <p id="error-message"><%= errorMessage %></p>
+          <% } %>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

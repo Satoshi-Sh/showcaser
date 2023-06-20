@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signup</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <%- include('header') %>
+    <div class="account-page">
+      <form class="account-board" action="/signup" method="POST">
+        <h1>Signup</h1>
+          <div class="input-div">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="username"
+              required
+            />
+          </div>
+          <div class="input-div">
+            <label for="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="password"
+              required
+            />
+          </div>
+          <div class="input-div"><label for="confirmPassword">Confirm Password</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="confirmation" required>
+          </div>
+          <div class="textarea-div">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" cols="30" rows="7"></textarea>
+          </div>
+          <div class="imageupload-div">
+            <label for="imageUpload">Select an Avatar (JPEG, PNG)</label>
+            <input type="file" id="imageUpload" name="imageUpload" accept=".jpg,.jpeg,.png">
+          </div>
+          <input type="submit">
+          <% if (errorMessage) { %>
+            <p id="error-message"><%= errorMessage %></p>
+          <% } %>
+        </form>
+      </div>
+    </div>
+    <script>
+      const passwordInput = document.getElementById('password');
+      const confirmPasswordInput = document.getElementById('confirmPassword');
+  
+      confirmPasswordInput.addEventListener('input', () => {
+        if (confirmPasswordInput.value !== passwordInput.value) {
+          confirmPasswordInput.setCustomValidity("Passwords do not match");
+        } else {
+          confirmPasswordInput.setCustomValidity('');
+        }
+      });
+    </script>
+  </body>
+</html>

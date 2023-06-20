@@ -1,13 +1,46 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import getData from "./database";
 const path = require("path");
 import { shortenText } from "./utils";
 
 const app = express();
+app.use(express.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
 
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static("src/public"));
+
+app.get("/login", (req, res) => {
+  res.render("login", { errorMessage: null });
+});
+
+app.post("/login", (req, res) => {
+  // Access form data
+  const name = req.body.username;
+  const password = req.body.password;
+  console.log(name, password);
+  // if log in sccesfully
+  //res.redirect("/users");
+  // failed to login, showing an error message
+  res.render("login", { errorMessage: "Invalid username or password" });
+});
+
+app.get("/signup", (req, res) => {
+  res.render("signup", { errorMessage: null });
+});
+
+app.post("/signup", (req: Request, res) => {
+  // Access form data
+  const name = req.body.username;
+  const password = req.body.password;
+  const description = req.body.description;
+  console.log(req);
+  console.log(name, password, description);
+  // if log in sccesfully
+  //res.redirect("/users");
+  // failed to login, showing an error message
+  res.render("signup", { errorMessage: "Invalid username or password" });
+});
 
 app.get("/users", (req, res) => {
   getData("SELECT * FROM users;")
