@@ -3,11 +3,20 @@ import getData, { pool } from "./database";
 const path = require("path");
 import { shortenText, hashPassword, comparePassword } from "./utils";
 import multer from "multer";
+const cookieParser = require("cookie-parser");
+const {
+  configurePassport,
+  generateToken,
+  authenticateToken,
+} = require("./auth");
 
 const app = express();
 app.use(express.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
+app.use(express.json());
+app.use(cookieParser());
 
+configurePassport();
 // Configure multer
 const uploadDirectory = "src/public/images";
 
@@ -32,9 +41,8 @@ app.get("/login", (req, res) => {
 app.post("/login", (req, res) => {
   // Access form data
   const { username, password } = req.body;
-  console.log(username, password);
   pool.query(
-    "SELECT password FROM users WHERE username = $1",
+    "SELECT * FROM users WHERE username = $1",
     [username],
     (error: any, results: any) => {
       if (error) {
@@ -46,9 +54,14 @@ app.post("/login", (req, res) => {
       if (results.rows.length > 0) {
         // check password is correct or not
         const pass = results.rows[0]["password"];
+        const { id, displayname, username, avatar_path } = results.rows[0];
         comparePassword(password, pass)
           .then((result: boolean) => {
             if (result) {
+              const payload = { id, username, avatar_path, displayname };
+              const token = generateToken(payload);
+              const expirationTime = new Date(Date.now() + 60 * 60 * 1000);
+              res.cookie("token", token, { expires: expirationTime });
               res.redirect("/users");
               console.log("User Logged in");
             } else {
