@@ -29,7 +29,7 @@ async function getData(query: string) {
     const result = await executeQuery(query);
     return result.rows;
   } catch (error) {
-    console.error("Error setting up the database:", error);
+    console.error("Retrieving the database:", error);
   }
 }
 

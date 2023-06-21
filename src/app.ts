@@ -4,6 +4,8 @@ const path = require("path");
 import { shortenText, hashPassword, comparePassword } from "./utils";
 import multer from "multer";
 const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 const {
   configurePassport,
   generateToken,
@@ -15,6 +17,32 @@ app.use(express.urlencoded({ extended: false }));
 app.set("view engine", "ejs");
 app.use(express.json());
 app.use(cookieParser());
+
+// for header
+const checkLoginStatus = (req: any, res: any, next: any) => {
+  const token = req.cookies.token;
+  let decoded;
+  if (token) {
+    try {
+      // Verify and decode the token
+      decoded = jwt.verify(token, process.env["SECRET"]) as {
+        id: number;
+        displayname: string;
+        description: string;
+        username: string;
+        avatar_path: string;
+      };
+    } catch (err) {
+      console.error("Invalid token:", err);
+    }
+  }
+  res.locals.isLoggedIn = decoded ? true : false;
+  if (decoded) {
+    res.locals.user = decoded;
+  }
+  next();
+};
+app.use(checkLoginStatus);
 
 configurePassport();
 // Configure multer
@@ -35,6 +63,10 @@ app.set("views", path.join(__dirname, "views"));
 app.use(express.static("src/public"));
 
 app.get("/login", (req, res) => {
+  const message = req.query.message;
+  if (message) {
+    res.render("login", { errorMessage: message });
+  }
   res.render("login", { errorMessage: null });
 });
 
@@ -54,11 +86,18 @@ app.post("/login", (req, res) => {
       if (results.rows.length > 0) {
         // check password is correct or not
         const pass = results.rows[0]["password"];
-        const { id, displayname, username, avatar_path } = results.rows[0];
+        const { id, displayname, description, username, avatar_path } =
+          results.rows[0];
         comparePassword(password, pass)
           .then((result: boolean) => {
             if (result) {
-              const payload = { id, username, avatar_path, displayname };
+              const payload = {
+                id,
+                username,
+                description,
+                avatar_path,
+                displayname,
+              };
               const token = generateToken(payload);
               const expirationTime = new Date(Date.now() + 60 * 60 * 1000);
               res.cookie("token", token, { expires: expirationTime });
@@ -108,7 +147,7 @@ app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
       : "/images/default.png";
     const values = [displayname, username, password, description, avatar_path]; // Assuming the file path is stored in the 'path' property of the 'file' object
     await pool.query(query, values);
-    console.log(password);
+
     // Redirect to success page or perform additional actions
     res.redirect("/users");
   } catch (error) {

@@ -38,6 +38,7 @@ const authenticateToken = (req: any, res: any, next: any) => {
       const decoded = jwt.verify(token, process.env["SECRET"]) as {
         id: number;
         displayname: string;
+        description: string;
         username: string;
         avatar_path: string;
       };
@@ -48,10 +49,10 @@ const authenticateToken = (req: any, res: any, next: any) => {
     } catch (err) {
       // Handle token verification errors
       console.error("Invalid token:", err);
-      res.status(401).json({ message: "Invalid token" });
+      res.redirect("login?message=Please login");
     }
   } else {
-    res.status(401).json({ message: "Token not found" });
+    res.redirect("login?message=Please login");
   }
 };
 

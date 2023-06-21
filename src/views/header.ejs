@@ -6,4 +6,11 @@
       <li><a href="/signup">Sign up</a></li>
     </ul>
   </nav>
+  <% if (isLoggedIn) { %>
+  <!-- Display content for logged-in users -->
+  <p>Welcome, <%= user.username %>!</p>
+  <% } else { %>
+  <!-- Display content for non-logged-in users -->
+  <p>Please log in to continue.</p>
+  <% } %>
 </header>
