@@ -141,15 +141,28 @@ app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
   try {
     // Insert user data into the database
     const query =
-      "INSERT INTO users (displayname, username, password, description, avatar_path) VALUES ($1, $2, $3, $4, $5)";
+      "INSERT INTO users (displayname, username, password, description, avatar_path) VALUES ($1, $2, $3, $4, $5) RETURNING *";
     const avatar_path = req.file
       ? `/images/${req.file.filename}`
       : "/images/default.png";
     const values = [displayname, username, password, description, avatar_path]; // Assuming the file path is stored in the 'path' property of the 'file' object
-    await pool.query(query, values);
+    const result = await pool.query(query, values);
+    console.log(result);
+    const insertedData = result.rows[0];
+    const { id } = insertedData;
 
-    // Redirect to success page or perform additional actions
+    const payload = {
+      id,
+      username,
+      description,
+      avatar_path,
+      displayname,
+    };
+    const token = generateToken(payload);
+    const expirationTime = new Date(Date.now() + 60 * 60 * 1000);
+    res.cookie("token", token, { expires: expirationTime });
     res.redirect("/users");
+    console.log("User Logged in");
   } catch (error) {
     console.error("Error during signup:", error);
     res.render("signup", {
@@ -196,6 +209,11 @@ app.get("/user/:id", (req, res) => {
       console.error(err);
       res.status(500).send("Internal Server Error");
     });
+});
+
+app.get("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.redirect("/login");
 });
 
 app.listen(3000, () => {
