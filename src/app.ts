@@ -5,6 +5,8 @@ import { shortenText, hashPassword, comparePassword } from "./utils";
 import multer from "multer";
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const { exec } = require("child_process");
+
 require("dotenv").config();
 const {
   configurePassport,
@@ -39,6 +41,8 @@ const checkLoginStatus = (req: any, res: any, next: any) => {
   res.locals.isLoggedIn = decoded ? true : false;
   if (decoded) {
     res.locals.user = decoded;
+  } else {
+    res.locals.user = null;
   }
   next();
 };
@@ -265,6 +269,68 @@ app.post(
 app.get("/update/:project_id", checkOwner, (req, res) => {
   res.render("project-update", { project: res.locals.project });
 });
+
+app.post(
+  "/update/:project_id",
+  checkOwner,
+  upload.single("imageUpload"),
+  async (req, res) => {
+    const id = req.params.project_id;
+    const { title, categories, description } = req.body;
+    if (req.file) {
+      const image_path = `/images/${req.file.filename}`;
+      const query =
+        "update posts SET title = $1, categories = $2, content = $3, image_path = $4 where id= $5";
+      // delete older image file
+      const result = await pool.query("select * from posts where id = $1", [
+        id,
+      ]);
+      const old_path = result.rows[0].image_path;
+      // clear images in public folder except for default images
+      const command = `rm -r src/public/${old_path}`;
+      exec(command, (error: any, stdout: any) => {
+        if (error) {
+          console.error(`Error executing the command: ${error}`);
+        }
+        // The command was executed successfully
+        console.log("Command output:", stdout);
+      });
+
+      pool.query(
+        query,
+        [title, [categories], description, image_path, id],
+        (err: any, result: any) => {
+          if (err) {
+            console.error("Error executing query", err);
+            //TODO send error message too.
+            res.render("project-update", { project: res.locals.project });
+          } else {
+            console.log("Row updated successfully");
+            res.redirect(`/user/${res.locals.user.id}`);
+          }
+        }
+      );
+    } else {
+      const query =
+        "update posts SET title = $1, categories = $2, content = $3 where id= $4";
+      pool.query(
+        query,
+        [title, [categories], description, id],
+        (err: any, result: any) => {
+          if (err) {
+            console.error("Error executing query", err);
+            res.status(500).send("Error updating row");
+            res.render("project-update", { project: res.locals.project });
+          } else {
+            console.log("Row updated successfully");
+            res.redirect(`/user/${res.locals.user.id}`);
+          }
+        }
+      );
+      console.log(id, title, categories, description);
+    }
+  }
+);
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

@@ -4,7 +4,7 @@
   <body>
     <%- include('header') %>
     <div class="account-page">
-      <form class="account-board" action="/update/:project-id" method="POST" enctype="multipart/form-data">
+      <form class="account-board" action="/update/<%= project.id %>" method="POST" enctype="multipart/form-data">
         <h1>Update Project</h1>
         <div class="input-div">
           <label for="title">Title</label>
@@ -34,7 +34,7 @@
           </div>
           <div class="imageupload-div">
             <label for="imageUpload">Add Image(JPEG, PNG) if you like to change</label>
-            <input type="file" id="imageUpload" name="imageUpload" accept=".jpg,.jpeg,.png" required>
+            <input type="file" id="imageUpload" name="imageUpload" accept=".jpg,.jpeg,.png">
           </div>
           <input type="submit">
         </form>
