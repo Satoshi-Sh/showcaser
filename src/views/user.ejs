@@ -24,7 +24,7 @@
         </div>
         <p><%= project.content %></p>
         <% if (owner.id==user.id) { %>
-        <a href="/update">Update Project</a>
+        <a href="/update/<%= project.id %>">Update Project</a>
         <% } else { %>
         <footer class="project-footer">
           Created by <%= project.displayname %>

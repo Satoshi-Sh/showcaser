@@ -44,6 +44,28 @@ const checkLoginStatus = (req: any, res: any, next: any) => {
 };
 app.use(checkLoginStatus);
 
+// for update project check owner of the project
+const checkOwner = async (req: any, res: any, next: any) => {
+  const project_id = req.params.project_id;
+  console.log(project_id);
+  if (!/^\d+$/.test(project_id)) {
+    res.status(400).send("Invalid ID");
+    return;
+  }
+  try {
+    const query = "select user_id from posts where id= $1;";
+    const values = [project_id];
+    const result = await pool.query(query, values);
+    if (result.rows[0].user_id == res.locals.user.id) {
+      console.log("working?");
+      next();
+    }
+  } catch (err) {
+    console.error(err);
+  }
+  res.render("login", { errorMessage: "Wrong account." });
+};
+
 configurePassport();
 // Configure multer
 const uploadDirectory = "src/public/images";
@@ -238,6 +260,10 @@ app.post(
     }
   }
 );
+
+app.get("/update/:project_id", checkOwner, (req, res) => {
+  res.render("project-update");
+});
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
