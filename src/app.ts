@@ -47,23 +47,24 @@ app.use(checkLoginStatus);
 // for update project check owner of the project
 const checkOwner = async (req: any, res: any, next: any) => {
   const project_id = req.params.project_id;
-  console.log(project_id);
   if (!/^\d+$/.test(project_id)) {
     res.status(400).send("Invalid ID");
     return;
   }
   try {
-    const query = "select user_id from posts where id= $1;";
+    const query = "select * from posts where id= $1;";
     const values = [project_id];
     const result = await pool.query(query, values);
-    if (result.rows[0].user_id == res.locals.user.id) {
-      console.log("working?");
+    const { id, title, content, image_path, user_id } = result.rows[0];
+    if (user_id == res.locals.user.id) {
+      res.locals.project = result.rows[0];
       next();
+    } else {
+      res.render("login", { errorMessage: "Wrong account." });
     }
   } catch (err) {
     console.error(err);
   }
-  res.render("login", { errorMessage: "Wrong account." });
 };
 
 configurePassport();
@@ -262,7 +263,7 @@ app.post(
 );
 
 app.get("/update/:project_id", checkOwner, (req, res) => {
-  res.render("project-update");
+  res.render("project-update", { project: res.locals.project });
 });
 
 app.listen(3000, () => {

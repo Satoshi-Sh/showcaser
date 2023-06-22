@@ -4,7 +4,7 @@
   <body>
     <%- include('header') %>
     <div class="account-page">
-      <form class="account-board" action="/upload" method="POST" enctype="multipart/form-data">
+      <form class="account-board" action="/update/:project-id" method="POST" enctype="multipart/form-data">
         <h1>Update Project</h1>
         <div class="input-div">
           <label for="title">Title</label>
@@ -13,6 +13,7 @@
             id="title"
             name="title"
             placeholder="title"
+            value="<%= project.title %>"
             required
           />
         </div>
@@ -23,12 +24,13 @@
               id="categories"
               name="categories"
               placeholder="categories"
+              value="<%= project.categories %>"
               required
             />
           </div>
           <div class="textarea-div">
             <label for="description">Description</label>
-            <textarea id="description" name="description" cols="40" rows="15" required></textarea>
+            <textarea id="description" name="description" cols="40" rows="15" required><%= project.content %></textarea>
           </div>
           <div class="imageupload-div">
             <label for="imageUpload">Add Image(JPEG, PNG) if you like to change</label>
