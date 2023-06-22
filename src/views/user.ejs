@@ -1,13 +1,10 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Projects</title>
-    <link rel="stylesheet" href="/styles.css" />
-  </head>
+  <%- include('head', { title: 'Project' }) %>
 
   <body>
     <%- include('header') %>
-    <h1 class="center">Projects of <%= user.displayname %></h1>
+    <h1 class="center">Projects</h1>
     <article class="projects-board">
       <% if (!projects) { %>
       <h2 class="center">No posting yet...</h2>
@@ -27,8 +24,12 @@
         </div>
         <p><%= project.content %></p>
         <footer class="project-footer">
-          Created by <%= user.displayname %>
-          <img src="<%= user.avatar_path %>" alt="Avatar" class="mini-avatar" />
+          Created by <%= project.displayname %>
+          <img
+            src="<%= project.avatar_path %>"
+            alt="Avatar"
+            class="mini-avatar"
+          />
         </footer>
       </div>
       <% } %> <% } %>

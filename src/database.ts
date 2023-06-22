@@ -27,7 +27,6 @@ async function executeQuery(query: string) {
 async function getData(query: string) {
   try {
     const result = await executeQuery(query);
-    console.log(result);
     return result.rows;
   } catch (error) {
     console.error("Retrieving the database:", error);
