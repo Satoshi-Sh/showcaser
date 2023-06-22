@@ -4,7 +4,7 @@
 
   <body>
     <%- include('header') %>
-    <h1 class="center">Projects</h1>
+    <h1 class="center">Projects of <%= owner.displayname %></h1>
     <article class="projects-board">
       <% if (!projects) { %>
       <h2 class="center">No posting yet...</h2>
@@ -26,7 +26,7 @@
         <footer class="project-footer">
           Created by <%= project.displayname %>
           <img
-            src="<%= project.avatar_path %>"
+            src="<%= owner.avatar_path %>"
             alt="Avatar"
             class="mini-avatar"
           />

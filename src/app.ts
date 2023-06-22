@@ -188,25 +188,24 @@ app.get("/users", (req, res) => {
     });
 });
 
-app.get("/user/:id", (req, res) => {
+app.get("/user/:id", async (req, res) => {
   const id = req.params.id;
   // validate number
   if (!/^\d+$/.test(id)) {
     res.status(400).send("Invalid ID");
     return;
   }
-  const query = `select *  from users
-    inner join posts on users.id=posts.user_id
-    where users.id=${id};`;
-  getData(query)
-    .then((data: any[]) => {
-      // when user don't have a post yet
-      res.render("user", { projects: data });
-    })
-    .catch((err: Error) => {
-      console.error(err);
-      res.status(500).send("Internal Server Error");
-    });
+
+  const getUserQuery = `SELECT * FROM users WHERE id = ${id};`;
+  const getProjectsQuery = `SELECT * FROM posts WHERE user_id = ${id};`;
+  try {
+    const owner = await getData(getUserQuery);
+    const projects = await getData(getProjectsQuery);
+    res.render("user", { projects, owner: owner[0] });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 app.get("/logout", (req, res) => {
