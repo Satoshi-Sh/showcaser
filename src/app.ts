@@ -147,7 +147,6 @@ app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
       : "/images/default.png";
     const values = [displayname, username, password, description, avatar_path]; // Assuming the file path is stored in the 'path' property of the 'file' object
     const result = await pool.query(query, values);
-    console.log(result);
     const insertedData = result.rows[0];
     const { id } = insertedData;
 
@@ -198,7 +197,6 @@ app.get("/user/:id", (req, res) => {
   }
   const query = `select *  from users
     inner join posts on users.id=posts.user_id
-    inner join images on posts.id=images.post_id
     where users.id=${id};`;
   getData(query)
     .then((data: any[]) => {
@@ -215,6 +213,32 @@ app.get("/logout", (req, res) => {
   res.clearCookie("token");
   res.redirect("/login");
 });
+
+app.get("/upload", authenticateToken, (req, res) => {
+  res.render("upload");
+});
+
+app.post(
+  "/upload",
+  authenticateToken,
+  upload.single("imageUpload"),
+  async (req: any, res) => {
+    const image_path = `/images/${req.file.filename}`;
+    const user_id = res.locals.user.id;
+    const { title, categories, description } = req.body;
+    try {
+      // Insert user data into the database
+      const query =
+        "INSERT INTO posts (title, categories, content, user_id,image_path) VALUES ($1, $2, $3, $4, $5)";
+      const values = [title, [categories], description, user_id, image_path];
+      await pool.query(query, values);
+      console.log(title, " posted successfully");
+      res.redirect(`/user/${user_id}`);
+    } catch (error) {
+      console.error("Error during uploading project:", error);
+    }
+  }
+);
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");

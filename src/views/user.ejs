@@ -7,7 +7,7 @@
 
   <body>
     <%- include('header') %>
-    <h1 class="center">Projects</h1>
+    <h1 class="center">Projects of <%= user.displayname %></h1>
     <article class="projects-board">
       <% if (!projects) { %>
       <h2 class="center">No posting yet...</h2>
@@ -16,7 +16,7 @@
         <h2><%= project.title %></h2>
         <div class="image-container">
           <img
-            src="data:image/jpeg;base64,<%= project.image.toString('base64') %>"
+            src="<%= project.image_path %>"
             alt="<%= project.alt %>"
             class="project-img"
           />
@@ -27,12 +27,8 @@
         </div>
         <p><%= project.content %></p>
         <footer class="project-footer">
-          Created by <%= project.name %>
-          <img
-            src="data:image/jpeg;base64,<%= project.avatar.toString('base64') %>"
-            alt="Avatar"
-            class="mini-avatar"
-          />
+          Created by <%= user.displayname %>
+          <img src="<%= user.avatar_path %>" alt="Avatar" class="mini-avatar" />
         </footer>
       </div>
       <% } %> <% } %>

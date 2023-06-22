@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Signup</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <%- include('header') %>
+    <div class="account-page">
+      <form class="account-board" action="/upload" method="POST" enctype="multipart/form-data">
+        <h1>Upload Project</h1>
+        <div class="input-div">
+          <label for="displayname">Title</label>
+          <input
+            type="text"
+            id="title"
+            name="title"
+            placeholder="title"
+            required
+          />
+        </div>
+          <div class="input-div">
+            <label for="username">categories</label>
+            <input
+              type="text"
+              id="categories"
+              name="categories"
+              placeholder="categories"
+              required
+            />
+          </div>
+          <div class="textarea-div">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" cols="40" rows="15" required></textarea>
+          </div>
+          <div class="imageupload-div">
+            <label for="imageUpload">Select an Avatar (JPEG, PNG)</label>
+            <input type="file" id="imageUpload" name="imageUpload" accept=".jpg,.jpeg,.png" required>
+          </div>
+          <input type="submit">
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

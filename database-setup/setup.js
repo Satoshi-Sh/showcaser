@@ -42,7 +42,7 @@ const createTableQueries = [
     title VARCHAR(255) NOT NULL,
     categories VARCHAR[],
     content TEXT,
-    user_id INTEGER REFERENCES users(id),
+    user_id INTEGER REFERENCES users(id) NOT NULL,
     image_path VARCHAR(255) NOT NULL
   );
 `,

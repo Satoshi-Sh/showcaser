@@ -32,9 +32,12 @@
             />
           </div>
           <input type="submit">
-          <% if (errorMessage) { %>
-            <p id="error-message"><%= errorMessage %></p>
-          <% } %>
+          <div id="empty">
+            <% if (errorMessage) { %>
+              <p id="error-message"><%= errorMessage %></p>
+            <% } %>
+          </div>
+          
         </form>
       </div>
     </div>
