@@ -1,7 +1,7 @@
 import express, { Request, Response } from "express";
 import getData, { pool } from "./database";
 const path = require("path");
-import { shortenText, hashPassword, comparePassword } from "./utils";
+import { uploadImage, hashPassword, comparePassword } from "./utils";
 import multer from "multer";
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
@@ -21,7 +21,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // for header
-const checkLoginStatus = (req: any, res: any, next: any) => {
+const checkLoginStatus = async (req: any, res: any, next: any) => {
   const token = req.cookies.token;
   let decoded;
   if (token) {
@@ -34,10 +34,18 @@ const checkLoginStatus = (req: any, res: any, next: any) => {
   }
   res.locals.isLoggedIn = decoded ? true : false;
   if (decoded) {
-    console.log(decoded);
-    res.locals.user = decoded;
-  } else {
-    res.locals.user = null;
+    // get mime and content
+    try {
+      const result = await pool.query("select * from images where id = $1", [
+        decoded.image_id,
+      ]);
+      const { mime, content } = result.rows[0];
+      res.locals.mime = mime;
+      res.locals.content = content;
+      res.locals.user = decoded;
+    } catch (err) {
+      console.error(err);
+    }
   }
   next();
 };
@@ -141,7 +149,6 @@ app.get("/signup", (req, res) => {
     errorMessage: null,
     displayname: null,
     username: null,
-    description: null,
   });
 });
 
@@ -155,19 +162,7 @@ app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
     // Insert user data into the database
     let image_id;
     // need to implement when user didn't choose any avatar
-    if (!req.file) {
-      return;
-    }
-    const { buffer, mimetype, size, encoding } = req.file;
-    const imageQuery =
-      "INSERT INTO images (content, mime, size,encoding) VALUES ($1, $2, $3, $4) RETURNING *";
-    const response = await pool.query(imageQuery, [
-      buffer,
-      mimetype,
-      size,
-      encoding,
-    ]);
-    image_id = response.rows[0].id;
+    image_id = uploadImage(req.file);
 
     const userQuery =
       "INSERT INTO users (displayname, username, password, city, course, image_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
@@ -178,7 +173,7 @@ app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
       city,
       course,
       image_id,
-    ]; // Assuming the file path is stored in the 'path' property of the 'file' object
+    ];
     const result = await pool.query(userQuery, values);
     const insertedData = result.rows[0];
     const { id } = insertedData;
@@ -190,14 +185,12 @@ app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
       course,
       city,
       displayname,
-      content: buffer,
-      mimetype,
     };
     const token = generateToken(payload);
     const expirationTime = new Date(Date.now() + 60 * 60 * 1000);
     res.cookie("token", token, { expires: expirationTime });
-    res.redirect("/users");
     console.log("User Logged in");
+    res.redirect("/users");
   } catch (error) {
     console.error("Error during signup:", error);
     res.render("signup", {
@@ -213,7 +206,6 @@ app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
 app.get("/users", (req, res) => {
   getData("SELECT * FROM users INNER JOIN images on images.id=users.image_id;")
     .then((data: any[]) => {
-      console.log(data);
       res.render("index", { users: data });
     })
     .catch((err: Error) => {
@@ -229,9 +221,8 @@ app.get("/user/:id", async (req, res) => {
     res.status(400).send("Invalid ID");
     return;
   }
-
   const getUserQuery = `SELECT * FROM users WHERE id = ${id};`;
-  const getProjectsQuery = `SELECT * FROM posts WHERE user_id = ${id};`;
+  const getProjectsQuery = `SELECT * FROM projects WHERE user_id = ${id};`;
   try {
     const owner = await getData(getUserQuery);
     const projects = await getData(getProjectsQuery);
@@ -256,14 +247,17 @@ app.post(
   authenticateToken,
   upload.single("imageUpload"),
   async (req: any, res) => {
-    const image_path = `/images/${req.file.filename}`;
+    console.log(req.body);
+    const { title, repo, pageUrl, description } = req.body;
     const user_id = res.locals.user.id;
-    const { title, categories, description } = req.body;
+
     try {
+      const image_id = await uploadImage(req.file);
       // Insert user data into the database
       const query =
-        "INSERT INTO posts (title, categories, content, user_id,image_path) VALUES ($1, $2, $3, $4, $5)";
-      const values = [title, [categories], description, user_id, image_path];
+        "INSERT INTO projects (title, repos, page_url, description, user_id, image_id) VALUES ($1, $2, $3, $4, $5, $6)";
+      const values = [title, repo, pageUrl, description, user_id, image_id];
+      console.log(values);
       await pool.query(query, values);
       console.log(title, " posted successfully");
       res.redirect(`/user/${user_id}`);
@@ -334,7 +328,6 @@ app.post(
           }
         }
       );
-      console.log(id, title, categories, description);
     }
   }
 );

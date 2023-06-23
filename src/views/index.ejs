@@ -10,12 +10,12 @@
       <div class="user-board" id="<%= user.id %>" onclick="handleClick(event)">
         <h2 id="<%= user.id %>"><%= user.displayname %></h2>
         <img
-          src="<%= user.avatar_path %>"
+          src="data:<%= user.mime %>;base64,<%= user.content.toString('base64') %>"
           alt="Avatar"
           class="avatar"
           id="<%= user.id %>"
         />
-        <p id="<%= user.id %>"><%=user.shortendDesc %></p>
+        <p id="<%= user.id %>"><%=user.city %>, <%=user.course %></p>
       </div>
       <% } %>
     </div>

@@ -1,5 +1,6 @@
 require("dotenv").config();
 const bcrypt = require("bcrypt");
+import { pool } from "./database";
 
 export function shortenText(text: string, maxLength: number) {
   if (text.length <= maxLength) {
@@ -22,7 +23,6 @@ export function hashPassword(
         reject(err); // Reject the promise with the error
       } else {
         // Step 2: Store the hashed password in your database or use it as needed
-        console.log("Hashed Password:", hash);
         resolve(hash); // Resolve the promise with the hashed password
       }
     });
@@ -47,4 +47,17 @@ export function comparePassword(
       }
     });
   });
+}
+
+export async function uploadImage(file: any) {
+  const { buffer, mimetype, size, encoding } = file;
+  const imageQuery =
+    "INSERT INTO images (content, mime, size,encoding) VALUES ($1, $2, $3, $4) RETURNING *";
+  const response = await pool.query(imageQuery, [
+    buffer,
+    mimetype,
+    size,
+    encoding,
+  ]);
+  return response.rows[0].id;
 }

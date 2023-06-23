@@ -23,9 +23,9 @@
   <div class="user-header">
     <p>Welcome, <%= user.displayname %></p>
     <img
-      src="src"
-      ="data:<%= user.mime %>;base64,<%= user.content.toString('base64') %>"
       class="avatar"
+      src="data:<%= mime %>;base64,<%= content.toString('base64')
+    %>"
     />
     <i class="fas fa-cog settings-icon"></i>
   </div>

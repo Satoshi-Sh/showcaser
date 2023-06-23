@@ -29,7 +29,7 @@
         <footer class="project-footer">
           Created by <%= project.displayname %>
           <img
-            src="<%= owner.avatar_path %>"
+            src="data:<%= owner.mime %>;base64,<%= owner.content.toString('base64') %>"
             alt="Avatar"
             class="mini-avatar"
           />

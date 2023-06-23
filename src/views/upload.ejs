@@ -16,14 +16,23 @@
             required
           />
         </div>
+        <div class="input-div">
+          <label for="repo">Repository Name</label>
+          <input
+            type="text"
+            id="repo"
+            name="repo"
+            placeholder="GitHub repositry name"
+            required
+          />
+        </div>
           <div class="input-div">
-            <label for="categories">categories</label>
+            <label for="pageUrl">Page URL</label>
             <input
               type="text"
-              id="categories"
-              name="categories"
-              placeholder="categories"
-              required
+              id="pagUrl"
+              name="pageUrl"
+              placeholder="optional..."
             />
           </div>
           <div class="textarea-div">
@@ -31,7 +40,7 @@
             <textarea id="description" name="description" cols="40" rows="15" required></textarea>
           </div>
           <div class="imageupload-div">
-            <label for="imageUpload">Select an Avatar (JPEG, PNG)</label>
+            <label for="imageUpload">Choose Project Image (JPEG, PNG)</label>
             <input type="file" id="imageUpload" name="imageUpload" accept=".jpg,.jpeg,.png" required>
           </div>
           <input type="submit">

@@ -38,8 +38,9 @@ const createTableQueries = [
   `CREATE TABLE IF NOT EXISTS projects (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
-    categories VARCHAR[],
-    content TEXT,
+    repos VARCHAR(255) NOT NULL,
+    page_url VARCHAR(255),
+    description TEXT,
     user_id INTEGER REFERENCES users(id) NOT NULL,
     image_id INTEGER REFERENCES images(id) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
