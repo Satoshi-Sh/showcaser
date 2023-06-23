@@ -23,7 +23,7 @@
               type="text"
               id="username"
               name="username"
-              placeholder="username"
+              placeholder="github username"
               required
             />
           </div>
@@ -40,10 +40,29 @@
           <div class="input-div"><label for="confirmPassword">Confirm Password</label>
             <input type="password" id="confirmPassword" name="confirmPassword" placeholder="confirmation" required>
           </div>
-          <div class="textarea-div">
-            <label for="description">Description</label>
-            <textarea id="description" name="description" cols="30" rows="7"><%= description  %></textarea>
+          <div class="input-div">
+            <label for="city">City</label>
+            <select name="city" id="city">
+              <option value="Saskatoon">Saskatoon</option>
+              <option value="Edmonton">Edmonton</option>
+              <option value="Winnipeg">Winnipeg</option>
+              <option value="Calgary">Calgary</option>
+              <option value="Regina">Regina</option>
+              <option value="Eeatern Canada">Eastern Canada</option>
+            </select>
           </div>
+          <div class="input-div">
+            <label for="course">Course</label>
+            <select name="course" id="course">
+              <option value="Vue.js">Vue.js</option>
+              <option value="Node.js">Node.js</option>
+              <option value="Ruby">Ruby</option>
+              <option value="Java">Java</option>
+              <option value="Python">Python</option>
+              <option value="React.js">React.js</option>
+            </select>
+          </div>
+          
           <div class="imageupload-div">
             <label for="imageUpload">Select an Avatar (JPEG, PNG)</label>
             <input type="file" id="imageUpload" name="imageUpload" accept=".jpg,.jpeg,.png">

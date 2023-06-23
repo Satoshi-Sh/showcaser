@@ -22,7 +22,11 @@
   <!-- Display content for logged-in users -->
   <div class="user-header">
     <p>Welcome, <%= user.displayname %></p>
-    <img src="<%= user.avatar_path %>" class="avatar" />
+    <img
+      src="src"
+      ="data:<%= user.mime %>;base64,<%= user.content.toString('base64') %>"
+      class="avatar"
+    />
     <i class="fas fa-cog settings-icon"></i>
   </div>
 

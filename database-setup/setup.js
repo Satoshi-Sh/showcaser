@@ -2,18 +2,6 @@ const { Pool } = require("pg");
 require("dotenv").config();
 const { exec } = require("child_process");
 
-// clear images in public folder except for default images
-const command = "rm -r src/public/images/imageUpload*";
-exec(command, (error, stdout, stderr) => {
-  if (error) {
-    console.error(`Error executing the command: ${error}`);
-    return;
-  }
-
-  // The command was executed successfully
-  console.log("Command output:", stdout);
-});
-
 // Create a new pool instance
 const pool = new Pool({
   user: process.env.USER_NAME,
@@ -25,12 +13,13 @@ const pool = new Pool({
 
 // Example query to create a table
 const createTableQueries = [
-  `DROP TABLE IF EXISTS users, posts, projects, images;
+  `DROP TABLE IF EXISTS users, projects, images;
   `,
   `CREATE TABLE IF NOT EXISTS images (
     id SERIAL PRIMARY KEY,
     content BYTEA NOT NULL,
-    mime TEXT not null,
+    encoding VARCHAR(255) NOT NULL,
+    mime VARCHAR(255) NOT NULL,
     size INT
   );
 `,
@@ -38,13 +27,13 @@ const createTableQueries = [
   CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     displayname VARCHAR(255) NOT NULL,
-    username VARCHAR(255) NOT NULL UNIQUE,
+    username VARCHAR(255) NOT NULL, 
     password VARCHAR(255) NOT NULL,
     city VARCHAR(50) NOT NULL,
     course VARCHAR(255) NOT NULL,
     image_id INTEGER REFERENCES images(id) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-  );
+  ); 
 `,
   `CREATE TABLE IF NOT EXISTS projects (
     id SERIAL PRIMARY KEY,

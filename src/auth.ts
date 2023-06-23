@@ -38,9 +38,11 @@ const authenticateToken = (req: any, res: any, next: any) => {
       const decoded = jwt.verify(token, process.env["SECRET"]) as {
         id: number;
         displayname: string;
-        description: string;
         username: string;
-        avatar_path: string;
+        course: string;
+        city: string;
+        content: any;
+        mime: string;
       };
 
       // Attach the decoded payload to the request object

@@ -27,19 +27,14 @@ const checkLoginStatus = (req: any, res: any, next: any) => {
   if (token) {
     try {
       // Verify and decode the token
-      decoded = jwt.verify(token, process.env["SECRET"]) as {
-        id: number;
-        displayname: string;
-        description: string;
-        username: string;
-        avatar_path: string;
-      };
+      decoded = jwt.verify(token, process.env["SECRET"]);
     } catch (err) {
       console.error("Invalid token:", err);
     }
   }
   res.locals.isLoggedIn = decoded ? true : false;
   if (decoded) {
+    console.log(decoded);
     res.locals.user = decoded;
   } else {
     res.locals.user = null;
@@ -75,15 +70,7 @@ configurePassport();
 // Configure multer
 const uploadDirectory = "src/public/images";
 
-const storage = multer.diskStorage({
-  destination: uploadDirectory,
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    const fileExtension = path.extname(file.originalname);
-    const fileName = file.fieldname + "-" + uniqueSuffix + fileExtension;
-    cb(null, fileName);
-  },
-});
+const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
 app.set("views", path.join(__dirname, "views"));
@@ -160,29 +147,51 @@ app.get("/signup", (req, res) => {
 
 app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
   // Access form data
-  const displayname = req.body.displayname;
-  const username = req.body.username;
-  const password = await hashPassword(req.body.password);
-  const description = req.body.description;
+  const { displayname, username, password, city, course } = req.body;
+  const hashedpassword = await hashPassword(req.body.password);
 
   try {
+    //
     // Insert user data into the database
-    const query =
-      "INSERT INTO users (displayname, username, password, description, avatar_path) VALUES ($1, $2, $3, $4, $5) RETURNING *";
-    const avatar_path = req.file
-      ? `/images/${req.file.filename}`
-      : "/images/default.png";
-    const values = [displayname, username, password, description, avatar_path]; // Assuming the file path is stored in the 'path' property of the 'file' object
-    const result = await pool.query(query, values);
+    let image_id;
+    // need to implement when user didn't choose any avatar
+    if (!req.file) {
+      return;
+    }
+    const { buffer, mimetype, size, encoding } = req.file;
+    const imageQuery =
+      "INSERT INTO images (content, mime, size,encoding) VALUES ($1, $2, $3, $4) RETURNING *";
+    const response = await pool.query(imageQuery, [
+      buffer,
+      mimetype,
+      size,
+      encoding,
+    ]);
+    image_id = response.rows[0].id;
+
+    const userQuery =
+      "INSERT INTO users (displayname, username, password, city, course, image_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
+    const values = [
+      displayname,
+      username,
+      hashedpassword,
+      city,
+      course,
+      image_id,
+    ]; // Assuming the file path is stored in the 'path' property of the 'file' object
+    const result = await pool.query(userQuery, values);
     const insertedData = result.rows[0];
     const { id } = insertedData;
 
     const payload = {
       id,
       username,
-      description,
-      avatar_path,
+      image_id,
+      course,
+      city,
       displayname,
+      content: buffer,
+      mimetype,
     };
     const token = generateToken(payload);
     const expirationTime = new Date(Date.now() + 60 * 60 * 1000);
@@ -195,18 +204,16 @@ app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
       errorMessage: "Duplicate username..",
       displayname,
       username,
-      description,
+      city,
+      course,
     });
   }
 });
 
 app.get("/users", (req, res) => {
-  getData("SELECT * FROM users;")
+  getData("SELECT * FROM users INNER JOIN images on images.id=users.image_id;")
     .then((data: any[]) => {
-      // add shortened user description
-      for (let i = 0; i < data.length; i++) {
-        data[i].shortendDesc = shortenText(data[i].description, 100);
-      }
+      console.log(data);
       res.render("index", { users: data });
     })
     .catch((err: Error) => {
