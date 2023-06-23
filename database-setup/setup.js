@@ -25,25 +25,35 @@ const pool = new Pool({
 
 // Example query to create a table
 const createTableQueries = [
-  `DROP TABLE IF EXISTS users, posts, images;
+  `DROP TABLE IF EXISTS users, posts, projects, images;
   `,
+  `CREATE TABLE IF NOT EXISTS images (
+    id SERIAL PRIMARY KEY,
+    content BYTEA NOT NULL,
+    mime TEXT not null,
+    size INT
+  );
+`,
   `
   CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     displayname VARCHAR(255) NOT NULL,
     username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    description TEXT,
-    avatar_path VARCHAR(255) NOT NULL
+    city VARCHAR(50) NOT NULL,
+    course VARCHAR(255) NOT NULL,
+    image_id INTEGER REFERENCES images(id) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
 `,
-  `CREATE TABLE IF NOT EXISTS posts (
+  `CREATE TABLE IF NOT EXISTS projects (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) NOT NULL,
     categories VARCHAR[],
     content TEXT,
     user_id INTEGER REFERENCES users(id) NOT NULL,
-    image_path VARCHAR(255) NOT NULL
+    image_id INTEGER REFERENCES images(id) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
 `,
 ];
