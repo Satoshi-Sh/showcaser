@@ -92,6 +92,27 @@ app.get("/login", (req, res) => {
   res.render("login", { errorMessage: null });
 });
 
+app.get("/", (req, res) => {
+  res.render("index.ejs", {
+    cities: {
+      Winnipeg: 10,
+      Saskatoon: 9,
+      Edmonton: 5,
+      Regina: 3,
+      Calgary: 9,
+      "Eastern Canada": 9,
+    },
+    courses: {
+      "Vue.js": 5,
+      "Node.js": 6,
+      Ruby: 7,
+      Java: 9,
+      Python: 12,
+      "Reac.js": 9,
+    },
+  });
+});
+
 app.post("/login", (req, res) => {
   // Access form data
   const { username, password } = req.body;
@@ -206,7 +227,7 @@ app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
 app.get("/users", (req, res) => {
   getData("SELECT * FROM users INNER JOIN images on images.id=users.image_id;")
     .then((data: any[]) => {
-      res.render("index", { users: data });
+      res.render("users", { users: data });
     })
     .catch((err: Error) => {
       console.error(err);

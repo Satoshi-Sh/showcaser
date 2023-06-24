@@ -1,6 +1,7 @@
 body {
   margin: 0;
   padding: 0;
+  padding-bottom: 20px;
 }
 /* for images */
 .avatar {
@@ -32,6 +33,74 @@ body {
 
 .center {
   text-align: center;
+}
+
+/* Index page */
+
+.heading-div {
+  margin: 5vh auto;
+  padding: 10px;
+  margin-bottom: 10vh;
+  text-align: center;
+  width: 50vw;
+  background-color: rgba(128, 128, 128, 0.507);
+}
+.heading-div h1 {
+  font-size: 2rem;
+  color: whitesmoke;
+  font-weight: bold;
+}
+.heading-div p {
+  color: white;
+}
+@media screen and (max-width: 1146px) {
+  /* Styles for screens with a minimum width of 900px */
+  /* Add your CSS rules here */
+  .heading-div {
+    margin-bottom: 15vh;
+  }
+}
+
+.background-container {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  width: calc(100vw - 15px);
+  height: 25vw;
+  min-height: 25vh;
+  position: absolute;
+  z-index: -1;
+  background-image: url("https://res.cloudinary.com/dmaijlcxd/image/upload/v1670714093/samples/landscapes/landscape-panorama.jpg");
+  background-size: cover;
+  background-attachment: scroll;
+}
+.cities-board,
+.courses-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 15rem);
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: center;
+  margin: 3rem auto;
+}
+.city-board,
+.course-board,
+.title-div {
+  border: 2px solid grey;
+  width: 15rem;
+  height: 12rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  background-color: white;
+}
+
+.title-div {
+  background-color: grey;
+  color: white;
+  font-style: italic;
 }
 
 /* user section */

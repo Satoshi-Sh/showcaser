@@ -1,28 +1,43 @@
 <!DOCTYPE html>
 <html>
-  <%- include('head', { title: 'Users' }) %>
+  <%- include('head', { title: 'Home' }) %>
 
   <body>
     <%- include('header') %>
-    <h1 class="center">Registered Users</h1>
-    <div class="users-board">
-      <% for (let user of users) { %>
-      <div class="user-board" id="<%= user.id %>" onclick="handleClick(event)">
-        <h2 id="<%= user.id %>"><%= user.displayname %></h2>
-        <img
-          src="data:<%= user.mime %>;base64,<%= user.content.toString('base64') %>"
-          alt="Avatar"
-          class="avatar"
-          id="<%= user.id %>"
-        />
-        <p id="<%= user.id %>"><%=user.city %>, <%=user.course %></p>
-      </div>
-      <% } %>
+    <div class="background-container"></div>
+    <div class="heading-div">
+      <h1>Showcaser</h1>
+      <p>
+        Showcasing students<br />
+        projects
+      </p>
     </div>
-    <script>
-      function handleClick(event) {
-        window.location.href = `/user/${event.target.id}`;
-      }
-    </script>
+
+    <div class="cities-board">
+      <div class="title-div">
+        <h1 class="center">Cities</h1>
+      </div>
+      <% Object.entries(cities).forEach(([city, counts]) => { %>
+      <div class="city-board">
+        <h2><%= city %></h2>
+        <h3><%= counts %></h3>
+      </div>
+      <% }) %>
+    </div>
+
+    <div class="courses-board">
+      <div class="title-div">
+        <h1 class="center">Courses</h1>
+      </div>
+      <% Object.entries(courses).forEach(([course, counts]) => { %>
+      <div class="course-board">
+        <h2><%= course %></h2>
+        <h3><%= counts %></h3>
+      </div>
+      <% }) %>
+    </div>
+    <div class="link-div">
+      <a href="/users">Users Page</a>
+    </div>
   </body>
 </html>
