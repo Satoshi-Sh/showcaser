@@ -96,6 +96,16 @@ body {
   border-radius: 5px;
   background-color: white;
 }
+.city-board:hover,
+.course-board:hover {
+  cursor: pointer;
+  background-color: grey;
+  color: white;
+}
+.city-board:hover h2,
+.course-board:hover h2 {
+  font-style: italic;
+}
 
 .title-div {
   background-color: grey;

@@ -18,9 +18,13 @@
         <h1 class="center">Cities</h1>
       </div>
       <% Object.entries(cities).forEach(([city, counts]) => { %>
-      <div class="city-board">
+      <div
+        class="city-board"
+        onmouseover="changeBoard(this)"
+        onmouseout="resetBoard(this)"
+      >
         <h2><%= city %></h2>
-        <h3><%= counts %></h3>
+        <h3 style="display: none"><%= counts %> Projects</h3>
       </div>
       <% }) %>
     </div>
@@ -30,14 +34,30 @@
         <h1 class="center">Courses</h1>
       </div>
       <% Object.entries(courses).forEach(([course, counts]) => { %>
-      <div class="course-board">
+      <div
+        class="course-board"
+        onmouseover="changeBoard(this)"
+        onmouseout="resetBoard(this)"
+      >
         <h2><%= course %></h2>
-        <h3><%= counts %></h3>
+        <h3 style="display: none"><%= counts %> Projects</h3>
       </div>
       <% }) %>
     </div>
     <div class="link-div">
       <a href="/users">Users Page</a>
     </div>
+    <script>
+      function changeBoard(element) {
+        const style = element.style;
+        const number = element.querySelector("h3");
+        number.style.display = "block";
+      }
+
+      function resetBoard(element) {
+        const number = element.querySelector("h3");
+        number.style.display = "none";
+      }
+    </script>
   </body>
 </html>
