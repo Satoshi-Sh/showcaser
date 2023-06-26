@@ -86,25 +86,24 @@ const upload = multer({ storage: storage });
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static("src/public"));
 
-app.get("/", (req, res) => {
-  res.render("index.ejs", {
-    cities: {
-      Winnipeg: 10,
-      Saskatoon: 9,
-      Edmonton: 5,
-      Regina: 3,
-      Calgary: 9,
-      "Eastern Canada": 9,
-    },
-    courses: {
-      "Vue.js": 5,
-      "Node.js": 6,
-      Ruby: 7,
-      Java: 9,
-      Python: 12,
-      "Reac.js": 9,
-    },
-  });
+app.get("/", async (req, res) => {
+  const getCityQuery = `
+  SELECT users.city, COUNT(*) FROM projects INNER JOIN users on projects.user_id = users.id GROUP BY users.city
+  `;
+  const getCourseQuery = `
+  SELECT users.course, COUNT(*) FROM projects INNER JOIN users on projects.user_id = users.id GROUP BY users.course
+  `;
+
+  try {
+    const cities = await getData(getCityQuery);
+    const courses = await getData(getCourseQuery);
+    res.render("index.ejs", {
+      cities,
+      courses,
+    });
+  } catch (err) {
+    console.error(err);
+  }
 });
 
 app.get("/login", (req, res) => {
@@ -133,7 +132,6 @@ app.post("/login", (req, res) => {
         const pass = results.rows[0]["password"];
         const { user_id, displayname, course, city, image_id, username } =
           results.rows[0];
-        console.log(results.rows[0]);
         comparePassword(password, pass)
           .then((result: boolean) => {
             if (result) {
@@ -172,9 +170,42 @@ app.post("/login", (req, res) => {
 app.get("/projects", async (req, res) => {
   const { city, course } = req.query;
   const getProjectsQuery = city
-    ? `SELECT * FROM projects INNER JOIN images on images.id=projects.image_id join users on users.id=projects.user_id  WHERE users.city = '${city}';`
-    : `
-  SELECT * FROM projects INNER JOIN images on images.id=projects.image_id join users on users.id=projects.user_id WHERE users.course = '${course}';`;
+    ? `SELECT 
+    project_images.content AS project_content, 
+    project_images.mime AS project_mime, 
+    user_images.content AS avatar_content, 
+    user_images.mime AS avatar_mime, 
+    projects.*, 
+    users.*
+  FROM projects
+  JOIN users ON users.id = projects.user_id
+  LEFT JOIN (
+    SELECT id, content, mime
+    FROM images
+  ) AS project_images ON project_images.id = projects.image_id
+  LEFT JOIN (
+    SELECT id, content, mime
+    FROM images
+  ) AS user_images ON user_images.id = users.image_id
+  WHERE users.city = '${city}';`
+    : `SELECT 
+    project_images.content AS project_content, 
+    project_images.mime AS project_mime, 
+    user_images.content AS avatar_content, 
+    user_images.mime AS avatar_mime, 
+    projects.*, 
+    users.*
+  FROM projects
+  JOIN users ON users.id = projects.user_id
+  LEFT JOIN (
+    SELECT id, content, mime
+    FROM images
+  ) AS project_images ON project_images.id = projects.image_id
+  LEFT JOIN (
+    SELECT id, content, mime
+    FROM images
+  ) AS user_images ON user_images.id = users.image_id
+  WHERE users.course = '${course}';`;
   try {
     const projects = await getData(getProjectsQuery);
     res.render("projects", { projects, city, course });

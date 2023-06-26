@@ -20,9 +20,13 @@
           />
         </div>
         <p><%= project.description %></p>
-        <% if (user && owner.id==user.id) { %>
+        <div class="link-div">
+          <a href="<%= project.repos %>">Source Code</a>
+          <a href="<%= project.page_url %>">Live Page</a>
+        </div>
+        <% if (user && project.user_id==user.id) { %>
         <a href="/update/<%= project.id %>">Update Project</a>
-        <% } else { %>
+        <% } %>
         <footer class="project-footer">
           Created by <%= owner.displayname %>
           <img
@@ -31,7 +35,6 @@
             class="mini-avatar"
           />
         </footer>
-        <% } %>
       </div>
       <% } %> <% } %>
     </article>

@@ -13,26 +13,30 @@
         <h2><%= project.title %></h2>
         <div class="image-container">
           <img
-            src="data:<%= project.mime %>;base64,<%= project.content.toString('base64')
+            src="data:<%= project.project_mime %>;base64,<%= project.project_content.toString('base64')
             %>"
             alt="project screenshot"
             class="project-img"
           />
         </div>
         <p><%= project.description %></p>
-        <% if (user && project.user_id==user.id) { %>
-        <a href="/update/<%= project.id %>">Update Project</a>
-        <% } else { %>
-
+        <div class="link-div">
+          <a href="<%= project.repos %>">Source Code</a>
+          <a href="<%= project.page_url %>">Live Page</a>
+        </div>
+        <div class="update-link-div">
+          <% if (user && project.user_id==user.id) { %>
+          <a href="/update/<%= project.id %>">Update Project</a>
+          <% } %>
+        </div>
         <footer class="project-footer">
           Created by <%= project.displayname %>
           <img
-            src="data:<%= project.mime %>;base64,<%= project.content.toString('base64') %>"
+            src="data:<%= project.avatar_mime %>;base64,<%= project.avatar_content.toString('base64') %>"
             alt="Avatar"
             class="mini-avatar"
           />
         </footer>
-        <% } %>
       </div>
       <% } %> <% } %>
     </article>

@@ -182,6 +182,10 @@ body {
   bottom: 5px;
 }
 
+.update-link-div {
+  margin: 1rem;
+}
+
 .link-div {
   margin-top: 30px;
   text-align: center;
