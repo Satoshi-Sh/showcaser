@@ -46,6 +46,8 @@ const checkLoginStatus = async (req: any, res: any, next: any) => {
     } catch (err) {
       console.error(err);
     }
+  } else {
+    res.locals.user = null;
   }
   next();
 };
@@ -117,7 +119,7 @@ app.post("/login", (req, res) => {
   // Access form data
   const { username, password } = req.body;
   pool.query(
-    "SELECT * FROM users WHERE username = $1",
+    "SELECT users.id as user_id,images.id as image_id, * FROM users join images on images.id = users.image_id  WHERE username = $1;",
     [username],
     (error: any, results: any) => {
       if (error) {
@@ -129,16 +131,18 @@ app.post("/login", (req, res) => {
       if (results.rows.length > 0) {
         // check password is correct or not
         const pass = results.rows[0]["password"];
-        const { id, displayname, description, username, avatar_path } =
+        const { users_id, displayname, course, city, image_id, username } =
           results.rows[0];
+        console.log(results.rows[0]);
         comparePassword(password, pass)
           .then((result: boolean) => {
             if (result) {
               const payload = {
-                id,
+                id: users_id,
                 username,
-                description,
-                avatar_path,
+                image_id,
+                course,
+                city,
                 displayname,
               };
               const token = generateToken(payload);
@@ -176,14 +180,14 @@ app.get("/signup", (req, res) => {
 app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
   // Access form data
   const { displayname, username, password, city, course } = req.body;
-  const hashedpassword = await hashPassword(req.body.password);
+  const hashedpassword = await hashPassword(password);
 
   try {
     //
     // Insert user data into the database
     let image_id;
     // need to implement when user didn't choose any avatar
-    image_id = uploadImage(req.file);
+    image_id = await uploadImage(req.file);
 
     const userQuery =
       "INSERT INTO users (displayname, username, password, city, course, image_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *";
@@ -197,6 +201,7 @@ app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
     ];
     const result = await pool.query(userQuery, values);
     const insertedData = result.rows[0];
+
     const { id } = insertedData;
 
     const payload = {
@@ -225,7 +230,9 @@ app.post("/signup", upload.single("imageUpload"), async (req: Request, res) => {
 });
 
 app.get("/users", (req, res) => {
-  getData("SELECT * FROM users INNER JOIN images on images.id=users.image_id;")
+  getData(
+    "SELECT users.id AS user_id, images.id AS image_id, * FROM users INNER JOIN images on images.id=users.image_id;"
+  )
     .then((data: any[]) => {
       res.render("users", { users: data });
     })
@@ -242,8 +249,8 @@ app.get("/user/:id", async (req, res) => {
     res.status(400).send("Invalid ID");
     return;
   }
-  const getUserQuery = `SELECT * FROM users WHERE id = ${id};`;
-  const getProjectsQuery = `SELECT * FROM projects WHERE user_id = ${id};`;
+  const getUserQuery = `SELECT * FROM users INNER JOIN images on images.id=users.image_id WHERE users.id = ${id};`;
+  const getProjectsQuery = `SELECT * FROM projects INNER JOIN images on images.id=projects.image_id  WHERE user_id = ${id};`;
   try {
     const owner = await getData(getUserQuery);
     const projects = await getData(getProjectsQuery);
@@ -268,7 +275,6 @@ app.post(
   authenticateToken,
   upload.single("imageUpload"),
   async (req: any, res) => {
-    console.log(req.body);
     const { title, repo, pageUrl, description } = req.body;
     const user_id = res.locals.user.id;
 
@@ -278,7 +284,6 @@ app.post(
       const query =
         "INSERT INTO projects (title, repos, page_url, description, user_id, image_id) VALUES ($1, $2, $3, $4, $5, $6)";
       const values = [title, repo, pageUrl, description, user_id, image_id];
-      console.log(values);
       await pool.query(query, values);
       console.log(title, " posted successfully");
       res.redirect(`/user/${user_id}`);

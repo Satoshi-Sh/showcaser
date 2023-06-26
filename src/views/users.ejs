@@ -7,15 +7,22 @@
     <h1 class="center">Registered Users</h1>
     <div class="users-board">
       <% for (let user of users) { %>
-      <div class="user-board" id="<%= user.id %>" onclick="handleClick(event)">
-        <h2 id="<%= user.id %>"><%= user.displayname %></h2>
+      <div
+        class="user-board"
+        id="<%= user.user_id %>"
+        onclick="handleClick(event)"
+      >
+        <h2 id="<%= user.user_id %>"><%= user.displayname %></h2>
         <img
           src="data:<%= user.mime %>;base64,<%= user.content.toString('base64') %>"
           alt="Avatar"
           class="avatar"
-          id="<%= user.id %>"
+          id="<%= user.user_id %>"
         />
-        <p id="<%= user.id %>"><%=user.city %>, <%=user.course %></p>
+        <p id="<%= user.user_id %>"><%=user.city %>, <%=user.course %></p>
+        <a href="https://github.com/<%= user.username %>">
+          <i class="fab fa-github logo"></i>
+        </a>
       </div>
       <% } %>
     </div>

@@ -13,21 +13,18 @@
         <h2><%= project.title %></h2>
         <div class="image-container">
           <img
-            src="<%= project.image_path %>"
-            alt="<%= project.alt %>"
+            src="data:<%= project.mime %>;base64,<%= project.content.toString('base64')
+            %>"
+            alt="project screenshot"
             class="project-img"
           />
         </div>
-        <div class="categories">
-          <% for (let category of project.categories) { %> #<%= category %> <% }
-          %>
-        </div>
-        <p><%= project.content %></p>
+        <p><%= project.description %></p>
         <% if (user && owner.id==user.id) { %>
         <a href="/update/<%= project.id %>">Update Project</a>
         <% } else { %>
         <footer class="project-footer">
-          Created by <%= project.displayname %>
+          Created by <%= owner.displayname %>
           <img
             src="data:<%= owner.mime %>;base64,<%= owner.content.toString('base64') %>"
             alt="Avatar"

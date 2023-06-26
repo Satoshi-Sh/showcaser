@@ -18,14 +18,16 @@
         <h1 class="center">Cities</h1>
       </div>
       <% Object.entries(cities).forEach(([city, counts]) => { %>
-      <div
-        class="city-board"
-        onmouseover="changeBoard(this)"
-        onmouseout="resetBoard(this)"
-      >
-        <h2><%= city %></h2>
-        <h3 style="display: none"><%= counts %> Projects</h3>
-      </div>
+      <a href="/projects?city=<%= city %>">
+        <div
+          class="city-board"
+          onmouseover="changeBoard(this)"
+          onmouseout="resetBoard(this)"
+        >
+          <h2><%= city %></h2>
+          <h3 style="display: none"><%= counts %> Projects</h3>
+        </div>
+      </a>
       <% }) %>
     </div>
 
@@ -34,14 +36,16 @@
         <h1 class="center">Courses</h1>
       </div>
       <% Object.entries(courses).forEach(([course, counts]) => { %>
-      <div
-        class="course-board"
-        onmouseover="changeBoard(this)"
-        onmouseout="resetBoard(this)"
-      >
-        <h2><%= course %></h2>
-        <h3 style="display: none"><%= counts %> Projects</h3>
-      </div>
+      <a href="/projects?course=<%= course %>">
+        <div
+          class="course-board"
+          onmouseover="changeBoard(this)"
+          onmouseout="resetBoard(this)"
+        >
+          <h2><%= course %></h2>
+          <h3 style="display: none"><%= counts %> Projects</h3>
+        </div>
+      </a>
       <% }) %>
     </div>
     <div class="link-div">
