@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
-  <%- include('head', { title: 'Project: ' + owner.displayname }) %>
+  <%- include('head', { title: 'Projects '}) %>
 
   <body>
     <%- include('header') %>
-    <h1 class="center">Projects of <%= owner.displayname %></h1>
+    <h1 class="center"><%= city || course %></h1>
     <article class="projects-board">
       <% if (!projects) { %>
       <h2 class="center">No posting yet...</h2>
@@ -20,13 +20,14 @@
           />
         </div>
         <p><%= project.description %></p>
-        <% if (user && owner.id==user.id) { %>
+        <% if (user && project.user_id==user.id) { %>
         <a href="/update/<%= project.id %>">Update Project</a>
         <% } else { %>
+
         <footer class="project-footer">
-          Created by <%= owner.displayname %>
+          Created by <%= project.displayname %>
           <img
-            src="data:<%= owner.mime %>;base64,<%= owner.content.toString('base64') %>"
+            src="data:<%= project.mime %>;base64,<%= project.content.toString('base64') %>"
             alt="Avatar"
             class="mini-avatar"
           />

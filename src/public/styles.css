@@ -124,7 +124,8 @@ body {
   grid-template-columns: repeat(auto-fill, 20rem);
   grid-gap: 10px;
   justify-content: center;
-  align-items: center;
+  width: 80vw;
+  margin: 0 auto;
 }
 
 .user-board {
@@ -248,7 +249,8 @@ header ul li a:hover {
 /* login and sigin in page */
 
 .account-page {
-  margin-top: 40px;
+  margin-top: 5rem;
+  margin-bottom: 5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -271,7 +273,7 @@ label {
   justify-content: center;
   gap: 20px;
   padding-top: 50px;
-  padding-bottom: 50px;
+  padding-bottom: 3rem;
 }
 
 #empty {

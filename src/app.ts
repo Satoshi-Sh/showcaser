@@ -86,14 +86,6 @@ const upload = multer({ storage: storage });
 app.set("views", path.join(__dirname, "views"));
 app.use(express.static("src/public"));
 
-app.get("/login", (req, res) => {
-  const message = req.query.message;
-  if (message) {
-    res.render("login", { errorMessage: message });
-  }
-  res.render("login", { errorMessage: null });
-});
-
 app.get("/", (req, res) => {
   res.render("index.ejs", {
     cities: {
@@ -115,6 +107,14 @@ app.get("/", (req, res) => {
   });
 });
 
+app.get("/login", (req, res) => {
+  const message = req.query.message;
+  if (message) {
+    res.render("login", { errorMessage: message });
+  }
+  res.render("login", { errorMessage: null });
+});
+
 app.post("/login", (req, res) => {
   // Access form data
   const { username, password } = req.body;
@@ -131,14 +131,14 @@ app.post("/login", (req, res) => {
       if (results.rows.length > 0) {
         // check password is correct or not
         const pass = results.rows[0]["password"];
-        const { users_id, displayname, course, city, image_id, username } =
+        const { user_id, displayname, course, city, image_id, username } =
           results.rows[0];
         console.log(results.rows[0]);
         comparePassword(password, pass)
           .then((result: boolean) => {
             if (result) {
               const payload = {
-                id: users_id,
+                id: user_id,
                 username,
                 image_id,
                 course,
@@ -167,6 +167,21 @@ app.post("/login", (req, res) => {
       }
     }
   );
+});
+
+app.get("/projects", async (req, res) => {
+  const { city, course } = req.query;
+  const getProjectsQuery = city
+    ? `SELECT * FROM projects INNER JOIN images on images.id=projects.image_id join users on users.id=projects.user_id  WHERE users.city = '${city}';`
+    : `
+  SELECT * FROM projects INNER JOIN images on images.id=projects.image_id join users on users.id=projects.user_id WHERE users.course = '${course}';`;
+  try {
+    const projects = await getData(getProjectsQuery);
+    res.render("projects", { projects, city, course });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Internal Server Error");
+  }
 });
 
 app.get("/signup", (req, res) => {
