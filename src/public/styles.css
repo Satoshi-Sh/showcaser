@@ -22,8 +22,8 @@ body {
   height: 384px;
   width: auto;
   display: flex;
-  align-items: center;
   justify-content: center;
+  overflow-y: hidden;
 }
 
 .project-img {

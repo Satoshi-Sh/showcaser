@@ -27,7 +27,7 @@ const createTableQueries = [
   CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     displayname VARCHAR(255) NOT NULL,
-    username VARCHAR(255) NOT NULL, 
+    username VARCHAR(255) NOT NULL UNIQUE, 
     password VARCHAR(255) NOT NULL,
     city VARCHAR(50) NOT NULL,
     course VARCHAR(255) NOT NULL,
