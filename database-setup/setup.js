@@ -1,6 +1,5 @@
 const { Pool } = require("pg");
 require("dotenv").config();
-const { exec } = require("child_process");
 
 // Create a new pool instance
 const pool = new Pool({
@@ -25,7 +24,7 @@ const createTableQueries = [
 `,
   `
   CREATE TABLE IF NOT EXISTS users (
-    id SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY UNIQUE,
     displayname VARCHAR(255) NOT NULL,
     username VARCHAR(255) NOT NULL UNIQUE, 
     password VARCHAR(255) NOT NULL,
@@ -36,7 +35,7 @@ const createTableQueries = [
   ); 
 `,
   `CREATE TABLE IF NOT EXISTS projects (
-    id SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY UNIQUE,
     title VARCHAR(255) NOT NULL,
     repos VARCHAR(255) NOT NULL,
     page_url VARCHAR(255),

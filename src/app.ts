@@ -61,10 +61,11 @@ const checkOwner = async (req: any, res: any, next: any) => {
     return;
   }
   try {
-    const query = "select * from posts where id= $1;";
+    const query = "select * from projects where id= $1;";
     const values = [project_id];
     const result = await pool.query(query, values);
-    const { id, title, content, image_path, user_id } = result.rows[0];
+    const { user_id } = result.rows[0];
+    console.log(result.rows[0], res.locals.user);
     if (user_id == res.locals.user.id) {
       res.locals.project = result.rows[0];
       next();
@@ -78,7 +79,6 @@ const checkOwner = async (req: any, res: any, next: any) => {
 
 configurePassport();
 // Configure multer
-const uploadDirectory = "src/public/images";
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -296,7 +296,7 @@ app.get("/user/:id", async (req, res) => {
     return;
   }
   const getUserQuery = `SELECT * FROM users INNER JOIN images on images.id=users.image_id WHERE users.id = ${id};`;
-  const getProjectsQuery = `SELECT * FROM projects INNER JOIN images on images.id=projects.image_id  WHERE user_id = ${id};`;
+  const getProjectsQuery = `SELECT projects.id as project_id, images.id AS image_id, * FROM projects INNER JOIN images on images.id=projects.image_id  WHERE user_id = ${id};`;
   try {
     const owner = await getData(getUserQuery);
     const projects = await getData(getProjectsQuery);
@@ -323,7 +323,6 @@ app.post(
   async (req: any, res) => {
     const { title, repo, pageUrl, description } = req.body;
     const user_id = res.locals.user.id;
-
     try {
       const image_id = await uploadImage(req.file);
       // Insert user data into the database
@@ -349,57 +348,32 @@ app.post(
   upload.single("imageUpload"),
   async (req, res) => {
     const id = req.params.project_id;
-    const { title, categories, description } = req.body;
-    if (req.file) {
-      const image_path = `/images/${req.file.filename}`;
-      const query =
-        "update posts SET title = $1, categories = $2, content = $3, image_path = $4 where id= $5";
-      // delete older image file
-      const result = await pool.query("select * from posts where id = $1", [
-        id,
-      ]);
-      const old_path = result.rows[0].image_path;
-      // clear images in public folder except for default images
-      const command = `rm -r src/public/${old_path}`;
-      exec(command, (error: any, stdout: any) => {
-        if (error) {
-          console.error(`Error executing the command: ${error}`);
+    const { title, repos, page_url, description } = req.body;
+    try {
+      // upload project image
+      let image_id;
+      let values;
+      if (req.file) {
+        image_id = await uploadImage(req.file);
+        values = [title, repos, page_url, description, image_id, id];
+      } else {
+        values = [title, repos, page_url, description, id];
+      }
+      const query = image_id
+        ? "update projects SET title = $1, repos = $2, page_url = $3, description = $4, image_id= $5 where id= $6"
+        : "update projects SET title = $1, repos = $2, page_url = $3, description = $4 where id= $5";
+      console.log(values);
+      pool.query(query, values, (err: any, result: any) => {
+        if (err) {
+          console.error("Error executing query", err);
+          res.render("project-update", { project: res.locals.project });
+        } else {
+          console.log("Row updated successfully");
+          res.redirect(`/user/${res.locals.user.id}`);
         }
-        // The command was executed successfully
-        console.log("Command output:", stdout);
       });
-
-      pool.query(
-        query,
-        [title, [categories], description, image_path, id],
-        (err: any, result: any) => {
-          if (err) {
-            console.error("Error executing query", err);
-            //TODO send error message too.
-            res.render("project-update", { project: res.locals.project });
-          } else {
-            console.log("Row updated successfully");
-            res.redirect(`/user/${res.locals.user.id}`);
-          }
-        }
-      );
-    } else {
-      const query =
-        "update posts SET title = $1, categories = $2, content = $3 where id= $4";
-      pool.query(
-        query,
-        [title, [categories], description, id],
-        (err: any, result: any) => {
-          if (err) {
-            console.error("Error executing query", err);
-            res.status(500).send("Error updating row");
-            res.render("project-update", { project: res.locals.project });
-          } else {
-            console.log("Row updated successfully");
-            res.redirect(`/user/${res.locals.user.id}`);
-          }
-        }
-      );
+    } catch (err) {
+      console.error(err);
     }
   }
 );

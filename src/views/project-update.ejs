@@ -18,19 +18,29 @@
           />
         </div>
           <div class="input-div">
-            <label for="categories">categories</label>
+            <label for="repos">Github Repo</label>
             <input
               type="text"
-              id="categories"
-              name="categories"
-              placeholder="categories"
-              value="<%= project.categories %>"
+              id="repos"
+              name="repos"
+              placeholder="https://github.com/username/project_name"
+              value="<%= project.repos %>"
               required
+            />
+          </div>
+          <div class="input-div">
+            <label for="livepage">Live Page</label>
+            <input
+              type="text"
+              id="livepage"
+              name="page_url"
+              placeholder="Optional"
+              value="<%= project.page_url %>"
             />
           </div>
           <div class="textarea-div">
             <label for="description">Description</label>
-            <textarea id="description" name="description" cols="40" rows="15" required><%= project.content %></textarea>
+            <textarea id="description" name="description" cols="40" rows="15" required><%= project.description %></textarea>
           </div>
           <div class="imageupload-div">
             <label for="imageUpload">Add Image(JPEG, PNG) if you like to change</label>
