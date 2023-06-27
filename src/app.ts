@@ -44,7 +44,6 @@ const checkLoginStatus = async (req: any, res: any, next: any) => {
       const result = await pool.query("select * from images where id = $1", [
         decoded.image_id,
       ]);
-      console.log(result.rows[0]);
       const { mime, content } = result.rows[0];
       res.locals.mime = mime;
       res.locals.content = content;
@@ -71,7 +70,6 @@ const checkOwner = async (req: any, res: any, next: any) => {
     const values = [project_id];
     const result = await pool.query(query, values);
     const { user_id } = result.rows[0];
-    console.log(result.rows[0], res.locals.user);
     if (user_id == res.locals.user.id) {
       res.locals.project = result.rows[0];
       next();
@@ -355,7 +353,8 @@ app.post(
   upload.single("imageUpload"),
   async (req, res) => {
     const id = req.params.project_id;
-    const { title, repos, page_url, description } = req.body;
+    console.log(req.body);
+    const { title, repos, page_url, description, old_image_id } = req.body;
     try {
       // upload project image
       let image_id;
@@ -369,12 +368,20 @@ app.post(
       const query = image_id
         ? "update projects SET title = $1, repos = $2, page_url = $3, description = $4, image_id= $5 where id= $6"
         : "update projects SET title = $1, repos = $2, page_url = $3, description = $4 where id= $5";
-      console.log(values);
       pool.query(query, values, (err: any, result: any) => {
         if (err) {
           console.error("Error executing query", err);
           res.render("project-update", { project: res.locals.project });
         } else {
+          // removing the old image
+          if (req.file) {
+            try {
+              console.log(old_image_id);
+              deleteImage(Number(old_image_id));
+            } catch (err) {
+              console.error(err);
+            }
+          }
           console.log("Row updated successfully");
           res.redirect(`/user/${res.locals.user.id}`);
         }
@@ -385,9 +392,8 @@ app.post(
   }
 );
 
-app.get("/account/:user_id", async (req, res) => {
+app.get("/account/:user_id", authenticateToken, async (req, res) => {
   const user_id = req.params.user_id;
-  console.log(res.locals.user);
   if (res.locals.user && res.locals.user.id != Number(user_id)) {
     res.redirect("/logout");
   } else {
@@ -397,10 +403,10 @@ app.get("/account/:user_id", async (req, res) => {
 
 app.post(
   "/account/:user_id",
+  authenticateToken,
   upload.single("imageUpload"),
   async (req, res) => {
     const { displayname, username, city, course } = req.body;
-    console.log(res.locals.user);
     const user_id = res.locals.user.id;
     let image_id: any;
     let values;
@@ -414,7 +420,6 @@ app.post(
     } else {
       values = [displayname, username, city, course, user_id];
     }
-    console.log(values);
     const query = image_id
       ? "update users SET displayname = $1, username = $2, city = $3, course = $4, image_id= $5 where id= $6"
       : "update users SET displayname = $1, username = $2, city = $3, course = $4 where id= $5";
@@ -455,7 +460,6 @@ app.post(
         }
         // need to update cookies from the new information
         res.clearCookie("token");
-        console.log(payload);
         const token = generateToken(payload);
         const expirationTime = new Date(Date.now() + 60 * 60 * 1000);
         res.cookie("token", token, { expires: expirationTime });

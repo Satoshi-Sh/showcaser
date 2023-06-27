@@ -46,15 +46,15 @@ const authenticateToken = (req: any, res: any, next: any) => {
       };
 
       // Attach the decoded payload to the request object
-      req.user = decoded;
+      //req.user = decoded;
       next();
     } catch (err) {
       // Handle token verification errors
       console.error("Invalid token:", err);
-      res.redirect("login?message=Please login");
+      res.redirect("/login?message=Please login");
     }
   } else {
-    res.redirect("login?message=Please login");
+    res.redirect("/login?message=Please login");
   }
 };
 

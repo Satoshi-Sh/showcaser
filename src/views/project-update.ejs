@@ -46,6 +46,9 @@
             <label for="imageUpload">Add Image(JPEG, PNG) if you like to change</label>
             <input type="file" id="imageUpload" name="imageUpload" accept=".jpg,.jpeg,.png">
           </div>
+          <div style="display:none">
+             <input type="number" name="old_image_id" value="<%= project.image_id %>">
+          </div>
           <input type="submit">
         </form>
       </div>

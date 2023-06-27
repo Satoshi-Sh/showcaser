@@ -23,11 +23,14 @@
   <!-- Display content for logged-in users -->
   <div class="user-header">
     <p>Welcome, <%= user.displayname %></p>
-    <img
-      class="avatar"
-      src="data:<%= mime %>;base64,<%= content.toString('base64')
+    <a href="/user/<%= user.id %>">
+      <img
+        class="avatar"
+        src="data:<%= mime %>;base64,<%= content.toString('base64')
     %>"
-    />
+      />
+    </a>
+
     <a href="/account/<%= user.id %>">
       <i class="fas fa-cog settings-icon"></i>
     </a>
