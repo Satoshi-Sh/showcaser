@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+  <%- include('head', { title: 'Update Account Info' }) %>
+  <body>
+    <%- include('header') %>
+    <div class="account-page">
+      <form class="account-board" action="/account/<%= user.id %>" method="POST" enctype="multipart/form-data">
+        <h1>Update Info</h1>
+        <div class="input-div">
+          <label for="displayname">Display Name</label>
+          <input
+            type="text"
+            id="displayname"
+            name="displayname"
+            placeholder="displayname"
+            value="<%= user.displayname %>"
+            required
+          />
+        </div>
+          <div class="input-div">
+            <label for="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="github username"
+              value="<%= user.username %>"
+              required
+            />
+          </div>
+          <div class="input-div">
+            <label for="city">City</label>
+            <select name="city" id="city">
+              <option value="Saskatoon" <% if (user.city === 'Saskatoon') { %>selected<% } %>>Saskatoon</option>
+              <option value="Edmonton" <% if (user.city === 'Edmonton') { %>selected<% } %>>Edmonton</option>
+              <option value="Winnipeg" <% if (user.city === 'Winnipeg') { %>selected<% } %> >Winnipeg</option>
+              <option value="Calgary" <% if (user.city === 'Calgary') { %>selected<% } %> >Calgary</option>
+              <option value="Regina" <% if (user.city === 'Regina') { %>selected<% } %>>Regina</option>
+              <option value="Eeatern Canada" <% if (user.city === 'Eastern Canada') { %>selected<% } %>>Eastern Canada</option>
+            </select>
+          </div>
+          <div class="input-div">
+            <label for="course">Course</label>
+            <select name="course" id="course">
+              <option value="Vue.js" <% if (user.course === 'Vue.js') { %>selected<% } %>>Vue.js</option>
+              <option value="Node.js" <% if (user.course === 'Node.js') { %>selected<% } %>>Node.js</option>
+              <option value="Ruby" <% if (user.course === 'Ruby') { %>selected<% } %>>Ruby</option>
+              <option value="Java" <% if (user.course === 'Java') { %>selected<% } %>>Java</option>
+              <option value="Python" <% if (user.course === 'Python') { %>selected<% } %>>Python</option>
+              <option value="React.js" <% if (user.course === 'React.js') { %>selected<% } %>>React.js</option>
+            </select>
+          </div>
+          
+          <div class="imageupload-div">
+            <label for="imageUpload">Add an Avatar (JPEG, PNG) if you like to change</label>
+            <input type="file" id="imageUpload" name="imageUpload" accept=".jpg,.jpeg,.png">
+          </div>
+          <input type="submit">
+          <% if (errorMessage) { %>
+            <p id="error-message"><%= errorMessage %></p>
+          <% } %>
+        </form>
+      </div>
+    </div>
+    <script>
+    </script>
+  </body>
+</html>

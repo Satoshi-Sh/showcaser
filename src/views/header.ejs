@@ -28,7 +28,9 @@
       src="data:<%= mime %>;base64,<%= content.toString('base64')
     %>"
     />
-    <i class="fas fa-cog settings-icon"></i>
+    <a href="/account/<%= user.id %>">
+      <i class="fas fa-cog settings-icon"></i>
+    </a>
   </div>
 
   <% } %>

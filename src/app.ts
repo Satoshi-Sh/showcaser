@@ -1,7 +1,12 @@
 import express, { Request, Response } from "express";
 import getData, { pool } from "./database";
 const path = require("path");
-import { uploadImage, hashPassword, comparePassword } from "./utils";
+import {
+  uploadImage,
+  deleteImage,
+  hashPassword,
+  comparePassword,
+} from "./utils";
 import multer from "multer";
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
@@ -321,6 +326,7 @@ app.post(
   authenticateToken,
   upload.single("imageUpload"),
   async (req: any, res) => {
+    //TO Do delete old image from images table
     const { title, repo, pageUrl, description } = req.body;
     const user_id = res.locals.user.id;
     try {
@@ -375,6 +381,61 @@ app.post(
     } catch (err) {
       console.error(err);
     }
+  }
+);
+
+app.get("/account/:user_id", async (req, res) => {
+  const user_id = req.params.user_id;
+  console.log(res.locals.user);
+  if (res.locals.user.id != Number(user_id)) {
+    res.redirect("/logout");
+  } else {
+    res.render("user-update", { errorMessage: "" });
+  }
+});
+
+app.post(
+  "/account/:user_id",
+  upload.single("imageUpload"),
+  async (req, res) => {
+    const { displayname, username, city, course } = req.body;
+    const user_id = res.locals.user.id;
+    let image_id;
+    let values;
+    if (req.file) {
+      // delete old image
+      console.log("working??");
+      const old_image_id = res.locals.user["image_id"];
+      try {
+        deleteImage(old_image_id);
+      } catch (err) {
+        console.error(err);
+      }
+      try {
+        image_id = await uploadImage(req.file);
+      } catch (err) {
+        console.error(err);
+      }
+      values = [displayname, username, city, course, image_id, user_id];
+    } else {
+      values = [displayname, username, city, course, user_id];
+    }
+    console.log(values);
+    const query = image_id
+      ? "update uesrs SET displayname = $1, username = $2, city = $3, course = $4, image_id= $5 where id= $6"
+      : "update users SET displayname = $1, username = $2, city = $3, course = $4 where id= $5";
+
+    pool.query(query, values, (err: any, result: any) => {
+      if (err) {
+        console.error("Error executing query", err);
+        res.render(`usre-update`, {
+          errorMessage: "Failed to inster update data",
+        });
+      } else {
+        console.log("Row updated successfully");
+        res.redirect(`/users`);
+      }
+    });
   }
 );
 
