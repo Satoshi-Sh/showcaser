@@ -44,6 +44,7 @@ const checkLoginStatus = async (req: any, res: any, next: any) => {
       const result = await pool.query("select * from images where id = $1", [
         decoded.image_id,
       ]);
+      console.log(result.rows[0]);
       const { mime, content } = result.rows[0];
       res.locals.mime = mime;
       res.locals.content = content;
@@ -427,21 +428,34 @@ app.post(
       } else {
         // delete old image
         const old_image_id = res.locals.user["image_id"];
-        try {
-          deleteImage(Number(old_image_id));
-        } catch (err) {
-          console.error(err);
+        let payload;
+        if (req.file) {
+          try {
+            deleteImage(Number(old_image_id));
+            payload = {
+              id: user_id,
+              username,
+              image_id,
+              course,
+              city,
+              displayname,
+            };
+          } catch (err) {
+            console.error(err);
+          }
+        } else {
+          payload = {
+            id: user_id,
+            username,
+            image_id: old_image_id,
+            course,
+            city,
+            displayname,
+          };
         }
         // need to update cookies from the new information
         res.clearCookie("token");
-        const payload = {
-          id: user_id,
-          username,
-          image_id,
-          course,
-          city,
-          displayname,
-        };
+        console.log(payload);
         const token = generateToken(payload);
         const expirationTime = new Date(Date.now() + 60 * 60 * 1000);
         res.cookie("token", token, { expires: expirationTime });
