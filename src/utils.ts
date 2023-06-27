@@ -63,7 +63,7 @@ export async function uploadImage(file: any) {
 }
 
 export async function deleteImage(id: number) {
-  const imageQuery = `Delete from images where id = (id)`;
+  const imageQuery = `Delete from images where id = $1`;
   await pool.query(imageQuery, [id]);
   console.log("Old image was deleted..");
 }

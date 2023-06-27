@@ -387,7 +387,7 @@ app.post(
 app.get("/account/:user_id", async (req, res) => {
   const user_id = req.params.user_id;
   console.log(res.locals.user);
-  if (res.locals.user.id != Number(user_id)) {
+  if (res.locals.user && res.locals.user.id != Number(user_id)) {
     res.redirect("/logout");
   } else {
     res.render("user-update", { errorMessage: "" });
@@ -399,30 +399,23 @@ app.post(
   upload.single("imageUpload"),
   async (req, res) => {
     const { displayname, username, city, course } = req.body;
+    console.log(res.locals.user);
     const user_id = res.locals.user.id;
-    let image_id;
+    let image_id: any;
     let values;
     if (req.file) {
-      // delete old image
-      console.log("working??");
-      const old_image_id = res.locals.user["image_id"];
-      try {
-        deleteImage(old_image_id);
-      } catch (err) {
-        console.error(err);
-      }
       try {
         image_id = await uploadImage(req.file);
+        values = [displayname, username, city, course, image_id, user_id];
       } catch (err) {
         console.error(err);
       }
-      values = [displayname, username, city, course, image_id, user_id];
     } else {
       values = [displayname, username, city, course, user_id];
     }
     console.log(values);
     const query = image_id
-      ? "update uesrs SET displayname = $1, username = $2, city = $3, course = $4, image_id= $5 where id= $6"
+      ? "update users SET displayname = $1, username = $2, city = $3, course = $4, image_id= $5 where id= $6"
       : "update users SET displayname = $1, username = $2, city = $3, course = $4 where id= $5";
 
     pool.query(query, values, (err: any, result: any) => {
@@ -432,6 +425,26 @@ app.post(
           errorMessage: "Failed to inster update data",
         });
       } else {
+        // delete old image
+        const old_image_id = res.locals.user["image_id"];
+        try {
+          deleteImage(Number(old_image_id));
+        } catch (err) {
+          console.error(err);
+        }
+        // need to update cookies from the new information
+        res.clearCookie("token");
+        const payload = {
+          id: user_id,
+          username,
+          image_id,
+          course,
+          city,
+          displayname,
+        };
+        const token = generateToken(payload);
+        const expirationTime = new Date(Date.now() + 60 * 60 * 1000);
+        res.cookie("token", token, { expires: expirationTime });
         console.log("Row updated successfully");
         res.redirect(`/users`);
       }
