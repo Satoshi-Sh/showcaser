@@ -22,7 +22,9 @@
         <p><%= project.description %></p>
         <div class="link-div">
           <a href="<%= project.repos %>">Source Code</a>
+          <% if (project.page_url!='') { %>
           <a href="<%= project.page_url %>">Live Page</a>
+          <% } %>
         </div>
         <div class="update-link-div">
           <% if (user && project.user_id==user.id) { %>
@@ -31,17 +33,16 @@
         </div>
         <footer class="project-footer">
           Created by <%= project.displayname %>
-          <img
-            src="data:<%= project.avatar_mime %>;base64,<%= project.avatar_content.toString('base64') %>"
-            alt="Avatar"
-            class="mini-avatar"
-          />
+          <a href="/user/<%= project.user_id %>">
+            <img
+              src="data:<%= project.avatar_mime %>;base64,<%= project.avatar_content.toString('base64') %>"
+              alt="Avatar"
+              class="mini-avatar"
+            />
+          </a>
         </footer>
       </div>
       <% } %> <% } %>
     </article>
-    <div class="link-div">
-      <a href="/users">Back to User Page</a>
-    </div>
   </body>
 </html>

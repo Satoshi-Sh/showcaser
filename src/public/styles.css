@@ -170,6 +170,11 @@ body {
   border-radius: 10px;
 }
 
+.project-board p {
+  margin-top: 30px;
+  width: 70%;
+}
+
 .categories {
   margin: 5px;
 }
@@ -183,12 +188,33 @@ body {
 }
 
 .update-link-div {
-  margin: 1rem;
+  margin: 2rem;
+}
+
+.update-link-div a {
+  border: 2px solid grey;
+  text-decoration: none;
+  padding: 5px;
+}
+.update-link-div a:hover {
+  background-color: grey;
+  color: white;
 }
 
 .link-div {
   margin-top: 30px;
   text-align: center;
+}
+
+.link-div a {
+  text-decoration: none;
+  border: 2px solid grey;
+  padding: 5px;
+}
+
+.link-div a:hover {
+  background-color: grey;
+  color: white;
 }
 
 a {
