@@ -5,9 +5,9 @@ require("dotenv").config();
 export const pool = new Pool({
   user: process.env.USER_NAME,
   password: process.env.PASSWORD,
-  host: process.env.HOST,
-  database: process.env.DATABASE,
-  port: process.env.PORT,
+  host: "localhost",
+  database: "mydb",
+  port: 5432,
 });
 
 // Function to execute queries

@@ -1,0 +1,5 @@
+// postgress user name and password
+USERNAME = "user";
+PASSWORD = "12345";
+// secret for jwtStrategy
+SECRET = "secret";

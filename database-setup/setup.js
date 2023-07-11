@@ -3,11 +3,11 @@ require("dotenv").config();
 
 // Create a new pool instance
 const pool = new Pool({
-  user: process.env.USER_NAME,
+  user: process.env.USERNAME,
   password: process.env.PASSWORD,
-  host: process.env.HOST,
-  database: process.env.DATABASE,
-  port: process.env.PORT,
+  host: "localhost",
+  database: "mydb",
+  port: 5432,
 });
 
 // Example query to create a table
