@@ -6,7 +6,7 @@
     <%- include('header') %>
     <h1 class="center">Projects of <%= owner.displayname %></h1>
     <article class="projects-board">
-      <% if (!projects) { %>
+      <% if (projects.length==0) { %>
       <h2 class="center">No posting yet...</h2>
       <% } else { %> <% for (let project of projects) { %>
       <div class="project-board" id="<%= project.id %>">
